@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.6",
     "@mui/x-date-pickers": "^8.23.0",
     "dayjs": "^1.11.19",

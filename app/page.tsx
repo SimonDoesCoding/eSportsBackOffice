@@ -30,7 +30,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/en-gb";
 import { get } from "http";
 
-const baseUrl = "https://localhost:7173/api";
+const baseUrl = "https://sitech-esports-services.azurewebsites.net/api";
 
 const getTeams = async () => {
   const data = await fetch(`${baseUrl}/teams`);
