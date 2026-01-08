@@ -9,9 +9,14 @@ import {
   CardActions,
   Button,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import { updateTeam } from "@/Services/TeamService";
+import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import { simulateTeamFixtures } from "@/Services/FixtureService";
+import "dayjs/locale/de";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export default function TeamCard(props: any) {
@@ -55,7 +60,7 @@ export default function TeamCard(props: any) {
             color="text.secondary"
             sx={{ textIndent: 10 }}
           >
-            {team.lastRosterChangeDate}
+            {dayjs(team.lastRosterChangeDate).format("DD MMM YYYY")}
           </Typography>
           <Typography variant="body1" color="text.primary">
             Recent Form Modifier
@@ -70,9 +75,11 @@ export default function TeamCard(props: any) {
         </CardContent>
       )}
       {isEditMode && (
-        <CardContent>
+        <CardContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <TextField
             value={team.name}
+            label="Team Name"
+            variant="standard"
             onChange={(e) => {
               setTeam((oldTeam: any) => {
                 const newTeam = { ...oldTeam };
@@ -81,6 +88,68 @@ export default function TeamCard(props: any) {
               });
             }}
           />
+          <TextField
+            value={team.gameModeWinPercents["Hardpoint"]}
+            variant="standard"
+            label="Hardpoint Win %"
+            onChange={(e: any) => {
+              setTeam((oldTeam: any) => {
+                const newTeam = { ...oldTeam };
+                newTeam.gameModeWinPercents["Hardpoint"] = e.target.value;
+                return newTeam;
+              });
+            }}
+          />
+          <TextField
+            value={team.gameModeWinPercents["SearchAndDestroy"]}
+            variant="standard"
+            label="SearchAndDestroy Win %"
+            onChange={(e: any) => {
+              setTeam((oldTeam: any) => {
+                const newTeam = { ...oldTeam };
+                newTeam.gameModeWinPercents["SearchAndDestroy"] =
+                  e.target.value;
+                return newTeam;
+              });
+            }}
+          />
+          <TextField
+            value={team.gameModeWinPercents["Overload"]}
+            variant="standard"
+            label="Overload Win %"
+            onChange={(e: any) => {
+              setTeam((oldTeam: any) => {
+                const newTeam = { ...oldTeam };
+                newTeam.gameModeWinPercents["Overload"] = e.target.value;
+                return newTeam;
+              });
+            }}
+          />
+          <TextField
+            value={team.recentFormModifier}
+            variant="standard"
+            label="Recent Form Modifier"
+            onChange={(e: any) => {
+              setTeam((oldTeam: any) => {
+                const newTeam = { ...oldTeam };
+                newTeam.recentFormModifier = e.target.value;
+                return newTeam;
+              });
+            }}
+          />
+          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
+            <DateTimePicker
+              label="Last Roster Change Date"
+              value={dayjs(team.lastRosterChangeDate)}
+              onChange={(e: any) => {
+                setTeam((oldTeam: any) => {
+                  const newTeam = { ...oldTeam };
+                  newTeam.lastRosterChangeDate = e;
+                  return newTeam;
+                });
+              }}
+            />
+          </LocalizationProvider>
         </CardContent>
       )}
       <CardActions>
@@ -90,7 +159,12 @@ export default function TeamCard(props: any) {
               aria-label="save"
               sx={{ minWidth: 25, minHeight: 25 }}
               variant="outlined"
-              onClick={() => setIsEditMode(false)}
+              onClick={async () => {
+                const updatedTeam = await updateTeam(team);
+                setTeam(updatedTeam);
+                await simulateTeamFixtures(team.id);
+                setIsEditMode(false);
+              }}
             >
               Save
             </Button>
@@ -112,8 +186,7 @@ export default function TeamCard(props: any) {
             aria-label="edit"
             sx={{ minWidth: 25, minHeight: 25 }}
             variant="outlined"
-            onClick={async () => {
-              await updateTeam(team);
+            onClick={() => {
               setIsEditMode(true);
             }}
           >
