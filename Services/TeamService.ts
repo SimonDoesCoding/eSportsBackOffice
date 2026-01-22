@@ -1,20 +1,33 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { baseUrl } from "./Config";
+import { Team } from '../types';
+import { apiRequest } from './api';
 
-export const getTeams = async () => {
-  const data = await fetch(`${baseUrl}/teams`);
-  return (await data.json()).sort((a: any, b: any) =>
-    a.name > b.name ? 1 : -1
-  );
-};
+export class TeamService {
+  static async getTeams(): Promise<Team[]> {
+    return apiRequest<Team[]>('/teams');
+  }
 
-export const updateTeam = async (team: any) => {
-  const data = await fetch(`${baseUrl}/teams/`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(team),
-  });
-  return await data.json();
-};
+  static async getTeam(id: string): Promise<Team> {
+    return apiRequest<Team>(`/teams/${id}`);
+  }
+
+  static async createTeam(team: Omit<Team, 'id' | 'createdAt' | 'updatedAt'>): Promise<Team> {
+    return apiRequest<Team>('/teams', {
+      method: 'POST',
+      body: JSON.stringify(team),
+    });
+  }
+
+  static async updateTeam(team: Team): Promise<Team> {
+    // Use PUT request to /teams endpoint with full team object including id
+    return apiRequest<Team>('/teams', {
+      method: 'PUT',
+      body: JSON.stringify(team),
+    });
+  }
+
+  static async deleteTeam(id: string): Promise<void> {
+    return apiRequest<void>(`/teams/${id}`, {
+      method: 'DELETE',
+    });
+  }
+}

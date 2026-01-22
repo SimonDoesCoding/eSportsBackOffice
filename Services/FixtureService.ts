@@ -1,77 +1,35 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { baseUrl } from "./Config";
+import { Fixture } from '../types';
+import { apiRequest } from './api';
 
-export const getUpcomingFixtures = async () => {
-  const data = await fetch(
-    `${baseUrl}/fixtures/league/a85df024-6762-4f84-8a14-2fe8e4b72bdd/upcoming`
-  );
-  return (await data.json()).sort(
-    (a: any, b: any) =>
-      new Date(b.startDateTime).getTime() - new Date(a.startDateTime).getTime()
-  );
-};
+// CDL League ID
+const CDL_LEAGUE_ID = 'a85df024-6762-4f84-8a14-2fe8e4b72bdd';
 
-export const getUpcomingFixturesByTeam = async (teamId: string) => {
-  const fixtures = await getUpcomingFixtures();
-  return fixtures.filter(
-    (fixture: any) => fixture.team1.id === teamId || fixture.team2.id === teamId
-  );
-};
+export class FixtureService {
+  static async getFixtures(leagueId: string = CDL_LEAGUE_ID): Promise<Fixture[]> {
+    return apiRequest<Fixture[]>(`/Fixtures/league/${leagueId}`);
+  }
 
-export const simulateTeamFixtures = async (teamId: string) => {
-  const fixtures = await getUpcomingFixturesByTeam(teamId);
-  fixtures.forEach(async (fixture: any) => {
-    await simulateFixture(fixture.id);
-  });
-};
+  static async getFixture(id: string): Promise<Fixture> {
+    return apiRequest<Fixture>(`/fixtures/${id}`);
+  }
 
-export const deleteFixture = async (fixtureId: string) => {
-  fetch(`${baseUrl}/fixtures/`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(fixtureId),
-  });
-};
+  static async createFixture(fixture: Omit<Fixture, 'id'>): Promise<Fixture> {
+    return apiRequest<Fixture>('/fixtures', {
+      method: 'POST',
+      body: JSON.stringify(fixture),
+    });
+  }
 
-export const getFixtureTypes = async () => {
-  const data = await fetch(`${baseUrl}/fixturetypes`);
-  return (await data.json()).sort((a: any, b: any) =>
-    a.name > b.name ? 1 : -1
-  );
-};
+  static async updateFixture(id: string, fixture: Partial<Fixture>): Promise<Fixture> {
+    return apiRequest<Fixture>(`/fixtures/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(fixture),
+    });
+  }
 
-export const getLeagues = async () => {
-  const data = await fetch(`${baseUrl}/leagues`);
-  return (await data.json()).sort((a: any, b: any) =>
-    a.name > b.name ? 1 : -1
-  );
-};
-
-export const createFixture = async (fixture: any) => {
-  await fetch(`${baseUrl}/fixtures`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      team1Id: fixture.team1Id,
-      team2Id: fixture.team2Id,
-      fixtureTypeId: fixture.fixtureTypeId,
-      leagueId: fixture.leagueId,
-      seriesLength: fixture.seriesLength,
-      startDateTime: fixture.startDateTime,
-    }),
-  });
-};
-
-export const simulateFixture = async (fixtureId: string) => {
-  await fetch(`${baseUrl}/simulation`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(fixtureId),
-  });
-};
+  static async deleteFixture(id: string): Promise<void> {
+    return apiRequest<void>(`/fixtures/${id}`, {
+      method: 'DELETE',
+    });
+  }
+}
