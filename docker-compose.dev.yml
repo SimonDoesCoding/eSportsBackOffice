@@ -1,15 +1,19 @@
 version: '3.8'
 
 services:
-  esports-ui:
+  esports-ui-dev:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - NEXT_PUBLIC_API_BASE_URL=https://api.sitechesports.com/api
       - NEXT_PUBLIC_APP_NAME=Esports Management UI
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
     restart: unless-stopped
-    container_name: esports-management-ui
+    container_name: esports-management-ui-dev

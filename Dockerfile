@@ -22,7 +22,7 @@ FROM node:18-alpine AS runner
 
 WORKDIR /app
 
-# Set production environment
+# Set environment to production
 ENV NODE_ENV production
 
 # Create non-root user for security
@@ -37,13 +37,11 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Switch to non-root user
 USER nextjs
 
-# Expose port
+# Expose port 3000
 EXPOSE 3000
-ENV PORT 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3000/api/health || exit 1
+# Set port environment variable
+ENV PORT 3000
 
 # Start the application
 CMD ["node", "server.js"]

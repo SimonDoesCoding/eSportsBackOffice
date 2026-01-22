@@ -1,0 +1,20 @@
+version: '3.8'
+
+# Docker Compose file for using published Docker Hub image
+# Usage: docker-compose -f docker-compose.hub.yml up
+
+services:
+  esports-ui:
+    image: yourusername/esports-management-ui:latest  # Replace 'yourusername' with actual Docker Hub username
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_BASE_URL=https://api.sitechesports.com/api
+      - NEXT_PUBLIC_APP_NAME=Esports Management UI
+    restart: unless-stopped
+    container_name: esports-management-ui-hub
+
+# To use this file:
+# 1. Replace 'yourusername' with your actual Docker Hub username
+# 2. Run: docker-compose -f docker-compose.hub.yml up
