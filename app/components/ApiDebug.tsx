@@ -15,14 +15,14 @@ export function ApiDebug() {
         <span className="text-blue-400">Teams:</span>
         {teamsLoading && <span className="text-yellow-400 ml-2">Loading...</span>}
         {teamsError && <span className="text-red-400 ml-2">Error: {teamsError.message}</span>}
-        {teams && <span className="text-green-400 ml-2">Loaded {teams.length} teams</span>}
+        {teams && Array.isArray(teams) && <span className="text-green-400 ml-2">Loaded {teams.length} teams</span>}
       </div>
       
       <div>
         <span className="text-blue-400">Fixtures:</span>
         {fixturesLoading && <span className="text-yellow-400 ml-2">Loading...</span>}
         {fixturesError && <span className="text-red-400 ml-2">Error: {fixturesError.message}</span>}
-        {fixtures && <span className="text-green-400 ml-2">Loaded {fixtures.length} fixtures</span>}
+        {fixtures && Array.isArray(fixtures) && <span className="text-green-400 ml-2">Loaded {fixtures.length} fixtures</span>}
       </div>
     </div>
   );
