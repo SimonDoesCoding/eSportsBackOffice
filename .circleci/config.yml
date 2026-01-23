@@ -1,186 +1,82 @@
 version: 2.1
 
-# Define orbs for Docker and Node.js
-orbs:
-  docker: circleci/docker@2.2.0
-  node: circleci/node@5.1.0
-
-# Define executors
-executors:
-  docker-executor:
+jobs:
+  build-and-push-docker:
     docker:
       - image: cimg/base:stable
-    resource_class: medium
+    working_directory: ~/repo
 
-# Define jobs
-jobs:
-  # Build and test the application
-  build-and-test:
-    executor: node/default
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: npm
-      - run:
-          name: Run linting
-          command: npm run lint
-      - run:
-          name: Build application
-          command: npm run build
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .next
-            - node_modules
 
-  # Build Docker image and push to Docker Hub
-  build-and-push-docker:
-    executor: docker-executor
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
       - setup_remote_docker:
-          version: 20.10.14
           docker_layer_caching: true
+
+      # Create and push git tag (main only)
       - run:
-          name: Build Docker image
+          name: Create git tag
           command: |
-            # Set image name and tag
-            IMAGE_NAME="esports-management-ui"
-            if [ "${CIRCLE_BRANCH}" == "main" ] || [ "${CIRCLE_BRANCH}" == "master" ]; then
-              TAG="latest"
-            elif [ -n "${CIRCLE_TAG}" ]; then
-              TAG="${CIRCLE_TAG}"
+
+            git fetch --tags
+
+            LATEST_TAG=$(git tag -l "v*" | sort -V | tail -n 1)
+
+            if [ -z "$LATEST_TAG" ]; then
+              NEXT_VERSION="v1.0.0"
             else
-              TAG="${CIRCLE_BRANCH}"
+              VERSION=$(echo "$LATEST_TAG" | sed 's/^v//')
+              MAJOR=$(echo "$VERSION" | cut -d. -f1)
+              MINOR=$(echo "$VERSION" | cut -d. -f2)
+              PATCH=$(echo "$VERSION" | cut -d. -f3)
+              if [ "$CIRCLE_BRANCH" != "main" ]; then
+                NEXT_VERSION="v$MAJOR.$MINOR.$PATCH.dev-$CIRCLE_BUILD_NUM"
+              else
+                echo "main branch: Incrementing version tag"
+                PATCH=$((PATCH + 1))
+                NEXT_VERSION="v$MAJOR.$MINOR.$PATCH"
+                echo "Creating tag $NEXT_VERSION"
+                git config user.email "ci@circleci.com"
+                git config user.name "CircleCI"
+                git tag "$NEXT_VERSION"
+                git push --tag https://$GITHUB_TOKEN@github.com/SimonDoesCoding/$GITHUB_PROJECT.git
+              fi
             fi
-            
-            echo "Building image: ${DOCKER_USERNAME}/${IMAGE_NAME}:${TAG}"
-            
-            # Build the image
-            docker build -t ${IMAGE_NAME}:${TAG} .
-            docker tag ${IMAGE_NAME}:${TAG} ${DOCKER_USERNAME}/${IMAGE_NAME}:${TAG}
-            
-            # Also tag as latest if this is a version tag
-            if [[ "${CIRCLE_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-              docker tag ${IMAGE_NAME}:${TAG} ${DOCKER_USERNAME}/${IMAGE_NAME}:latest
-            fi
+            IMAGE_VERSION=$(echo "$NEXT_VERSION" | sed 's/^v//')
+            echo "export IMAGE_VERSION=$IMAGE_VERSION" >> $BASH_ENV
+
+      # Login to Docker Hub
       - run:
           name: Login to Docker Hub
           command: |
-            echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+            echo "$DOCKERHUB_TOKEN" | docker login \
+              -u "$DOCKERHUB_USERNAME" \
+              --password-stdin
+
+      # Build Docker image
+      - run:
+          name: Build Docker image
+          command: |
+            docker build \
+              --build-arg NUGET_SOURCE_URL=https://nuget.pkg.github.com/simondoescoding/index.json \
+              --build-arg NUGET_AUTH_TOKEN=$NUGET_AUTH_TOKEN \
+              -t simonaspinall/esports-back-office:$IMAGE_VERSION \
+              -t simonaspinall/esports-back-office:latest \
+              -f Dockerfile \
+              .
+
+      # Push Docker image
       - run:
           name: Push Docker image
           command: |
-            IMAGE_NAME="esports-management-ui"
-            if [ "${CIRCLE_BRANCH}" == "main" ] || [ "${CIRCLE_BRANCH}" == "master" ]; then
-              TAG="latest"
-            elif [ -n "${CIRCLE_TAG}" ]; then
-              TAG="${CIRCLE_TAG}"
-            else
-              TAG="${CIRCLE_BRANCH}"
-            fi
-            
-            echo "Pushing image: ${DOCKER_USERNAME}/${IMAGE_NAME}:${TAG}"
-            docker push ${DOCKER_USERNAME}/${IMAGE_NAME}:${TAG}
-            
-            # Also push latest if this is a version tag
-            if [[ "${CIRCLE_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-              echo "Pushing latest tag"
-              docker push ${DOCKER_USERNAME}/${IMAGE_NAME}:latest
-            fi
-      - run:
-          name: Image information
-          command: |
-            IMAGE_NAME="esports-management-ui"
-            if [ "${CIRCLE_BRANCH}" == "main" ] || [ "${CIRCLE_BRANCH}" == "master" ]; then
-              TAG="latest"
-            elif [ -n "${CIRCLE_TAG}" ]; then
-              TAG="${CIRCLE_TAG}"
-            else
-              TAG="${CIRCLE_BRANCH}"
-            fi
-            
-            echo "✅ Successfully pushed Docker image!"
-            echo "🐳 Image: ${DOCKER_USERNAME}/${IMAGE_NAME}:${TAG}"
-            echo "🌐 Docker Hub: https://hub.docker.com/r/${DOCKER_USERNAME}/${IMAGE_NAME}"
-            echo "🚀 Run with: docker run -p 3000:3000 ${DOCKER_USERNAME}/${IMAGE_NAME}:${TAG}"
+            docker push simonaspinall/esports-back-office:$IMAGE_VERSION
+            docker push simonaspinall/esports-back-office:latest
 
-  # Security scan (optional)
-  security-scan:
-    executor: docker-executor
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 20.10.14
-      - run:
-          name: Install Trivy
-          command: |
-            sudo apt-get update
-            sudo apt-get install wget apt-transport-https gnupg lsb-release -y
-            wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-            echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
-            sudo apt-get update
-            sudo apt-get install trivy -y
-      - run:
-          name: Build image for scanning
-          command: |
-            docker build -t esports-management-ui:scan .
-      - run:
-          name: Run security scan
-          command: |
-            trivy image --exit-code 0 --severity HIGH,CRITICAL esports-management-ui:scan
-
-# Define workflows
 workflows:
-  version: 2
-  
-  # Main workflow for branches
-  build-and-deploy:
+  docker-build-and-publish:
     jobs:
-      - build-and-test:
-          filters:
-            branches:
-              only: /.*/
-            tags:
-              only: /.*/
-      
-      - security-scan:
-          requires:
-            - build-and-test
-          filters:
-            branches:
-              only:
-                - main
-                - master
-                - develop
-            tags:
-              only: /^v.*/
-      
       - build-and-push-docker:
-          requires:
-            - build-and-test
           filters:
             branches:
               only:
                 - main
-                - master
-                - develop
-            tags:
-              only: /^v.*/
-          context:
-            - docker-hub-creds
-  
-  # Nightly security scan
-  nightly-security:
-    triggers:
-      - schedule:
-          cron: "0 2 * * *"  # Run at 2 AM UTC daily
-          filters:
-            branches:
-              only:
-                - main
-                - master
-    jobs:
-      - security-scan
+                - development
