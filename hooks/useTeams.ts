@@ -2,7 +2,6 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { TeamService } from '../Services/TeamService';
-import { Team } from '../types/index';
 
 export function useTeams() {
   return useQuery({

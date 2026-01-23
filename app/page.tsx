@@ -3,16 +3,17 @@
 import { useTeams } from '../hooks/useTeams';
 import { useFixtures } from '../hooks/useFixtures';
 import { ApiDebug } from './components/ApiDebug';
+import { Team } from '../types';
 
 export default function Dashboard() {
   const { data: teams } = useTeams();
   const { data: fixtures } = useFixtures();
 
   const upcomingFixtures = fixtures || [];
-  const recentResults: any[] = []; // Results API not implemented yet
+  const recentResults: unknown[] = []; // Results API not implemented yet
 
   // Calculate overall team stats from game mode win percentages
-  const getOverallWinRate = (team: any) => {
+  const getOverallWinRate = (team: Team) => {
     const rates = team.gameModeWinPercents;
     return (rates.Hardpoint + rates.SearchAndDestroy + rates.Overload) / 3;
   };

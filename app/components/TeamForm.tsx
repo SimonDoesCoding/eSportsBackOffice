@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useCreateTeam, useUpdateTeam } from '../../hooks/useTeams';
-import { Team, GameModeWinPercents } from '../../types';
+import { Team } from '../../types';
 
 interface TeamFormProps {
   isOpen: boolean;
@@ -11,26 +11,14 @@ interface TeamFormProps {
 }
 
 export function TeamForm({ isOpen, onClose, team }: TeamFormProps) {
-  const [formData, setFormData] = useState({
-    name: '',
-    lastRosterChangeDate: new Date().toISOString().split('T')[0],
-    recentFormModifier: 1,
-    monthsSinceLastRosterChange: 0,
-    gameModeWinPercents: {
-      Hardpoint: 0,
-      SearchAndDestroy: 0,
-      Overload: 0
-    }
-  });
-
   const createTeamMutation = useCreateTeam();
   const updateTeamMutation = useUpdateTeam();
   const isEditing = !!team;
 
-  // Populate form when editing
-  useEffect(() => {
+  // Get initial form values
+  const getInitialFormData = () => {
     if (team) {
-      setFormData({
+      return {
         name: team.name,
         lastRosterChangeDate: team.lastRosterChangeDate.split('T')[0],
         recentFormModifier: team.recentFormModifier,
@@ -40,10 +28,9 @@ export function TeamForm({ isOpen, onClose, team }: TeamFormProps) {
           SearchAndDestroy: Math.round(team.gameModeWinPercents.SearchAndDestroy * 100),
           Overload: Math.round(team.gameModeWinPercents.Overload * 100)
         }
-      });
+      };
     } else {
-      // Reset form for creating new team
-      setFormData({
+      return {
         name: '',
         lastRosterChangeDate: new Date().toISOString().split('T')[0],
         recentFormModifier: 1,
@@ -53,9 +40,11 @@ export function TeamForm({ isOpen, onClose, team }: TeamFormProps) {
           SearchAndDestroy: 0,
           Overload: 0
         }
-      });
+      };
     }
-  }, [team, isOpen]);
+  };
+
+  const [formData, setFormData] = useState(getInitialFormData);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,22 +78,15 @@ export function TeamForm({ isOpen, onClose, team }: TeamFormProps) {
   };
 
   const handleClose = () => {
+    // Reset form to initial state
+    setFormData(getInitialFormData());
     onClose();
-    // Reset form when closing
-    if (!team) {
-      setFormData({
-        name: '',
-        lastRosterChangeDate: new Date().toISOString().split('T')[0],
-        recentFormModifier: 1,
-        monthsSinceLastRosterChange: 0,
-        gameModeWinPercents: {
-          Hardpoint: 0,
-          SearchAndDestroy: 0,
-          Overload: 0
-        }
-      });
-    }
   };
+
+  // Reset form when modal opens with different data
+  if (isOpen && JSON.stringify(formData) !== JSON.stringify(getInitialFormData())) {
+    setFormData(getInitialFormData());
+  }
 
   if (!isOpen) return null;
 

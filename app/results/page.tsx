@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 export default function ResultsPage() {
   const handleRecordResult = () => {
     alert('Result recording will be implemented when the results API endpoint is available');

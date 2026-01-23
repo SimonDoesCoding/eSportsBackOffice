@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Fixture, Result } from '../../types';
 
 interface ResultFormProps {
@@ -11,12 +11,6 @@ interface ResultFormProps {
 }
 
 export function ResultForm({ isOpen, onClose, fixture, result }: ResultFormProps) {
-  const [formData, setFormData] = useState({
-    team1Score: 0,
-    team2Score: 0,
-    completedAt: ''
-  });
-
   const isEditing = !!result;
 
   // Calculate default completion time (1.5 hours after start time)
@@ -26,23 +20,24 @@ export function ResultForm({ isOpen, onClose, fixture, result }: ResultFormProps
     return completionTime.toISOString().slice(0, 16); // datetime-local format
   };
 
-  // Populate form when editing
-  useEffect(() => {
+  // Get initial form values
+  const getInitialFormData = () => {
     if (result) {
-      setFormData({
+      return {
         team1Score: result.team1Score,
         team2Score: result.team2Score,
         completedAt: new Date(result.completedAt).toISOString().slice(0, 16)
-      });
+      };
     } else {
-      // Reset form for new result with default completion time
-      setFormData({
+      return {
         team1Score: 0,
         team2Score: 0,
         completedAt: getDefaultCompletionTime()
-      });
+      };
     }
-  }, [result, isOpen, fixture.startDateTime]);
+  };
+
+  const [formData, setFormData] = useState(getInitialFormData);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,16 +56,15 @@ export function ResultForm({ isOpen, onClose, fixture, result }: ResultFormProps
   };
 
   const handleClose = () => {
+    // Reset form to initial state
+    setFormData(getInitialFormData());
     onClose();
-    // Reset form when closing
-    if (!result) {
-      setFormData({
-        team1Score: 0,
-        team2Score: 0,
-        completedAt: getDefaultCompletionTime()
-      });
-    }
   };
+
+  // Reset form when modal opens with different data
+  if (isOpen && JSON.stringify(formData) !== JSON.stringify(getInitialFormData())) {
+    setFormData(getInitialFormData());
+  }
 
   if (!isOpen) return null;
 

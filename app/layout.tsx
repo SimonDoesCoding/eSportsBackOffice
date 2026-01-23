@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import Link from 'next/link'
 import './globals.css'
 import { Providers } from './providers'
 
@@ -27,11 +28,11 @@ export default function RootLayout({
                   <h1 className="text-xl font-bold text-blue-400">Esports Manager</h1>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <a href="/" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                  <a href="/teams" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Teams</a>
-                  <a href="/players" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Players</a>
-                  <a href="/fixtures" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fixtures</a>
-                  <a href="/results" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Results</a>
+                  <Link href="/" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</Link>
+                  <Link href="/teams" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Teams</Link>
+                  <Link href="/players" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Players</Link>
+                  <Link href="/fixtures" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fixtures</Link>
+                  <Link href="/results" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Results</Link>
                 </div>
               </div>
             </div>

@@ -7,7 +7,6 @@ import { Fixture, Result } from '../../types';
 
 export default function FixturesPage() {
   const { data: fixtures, isLoading, error } = useFixtures();
-  const [showCreateForm, setShowCreateForm] = useState(false);
   const [resultFormOpen, setResultFormOpen] = useState(false);
   const [selectedFixture, setSelectedFixture] = useState<Fixture | null>(null);
   const [editingResult, setEditingResult] = useState<Result | undefined>(undefined);
