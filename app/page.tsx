@@ -10,7 +10,7 @@ export default function Dashboard() {
   const { data: fixtures } = useFixtures();
 
   const upcomingFixtures = fixtures || [];
-  const recentResults: unknown[] = []; // Results API not implemented yet
+  const recentResults: never[] = []; // Results API not implemented yet - empty array
 
   // Calculate overall team stats from game mode win percentages
   const getOverallWinRate = (team: Team) => {
