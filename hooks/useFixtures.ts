@@ -7,7 +7,7 @@ import { Fixture } from '../types/index';
 export function useFixtures() {
   return useQuery<Fixture[]>({
     queryKey: ['fixtures'],
-    queryFn: FixtureService.getFixtures,
+    queryFn: () => FixtureService.getFixtures(),
   });
 }
 

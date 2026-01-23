@@ -3,7 +3,7 @@
 import { useTeams } from '../hooks/useTeams';
 import { useFixtures } from '../hooks/useFixtures';
 import { ApiDebug } from './components/ApiDebug';
-import { Team } from '../types';
+import { Team, Fixture } from '../types';
 
 export default function Dashboard() {
   const { data: teams } = useTeams();

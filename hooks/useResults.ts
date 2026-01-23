@@ -1,33 +1,44 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ResultService } from '../Services/ResultService';
-import { ResultFilters, CreateResultRequest, UpdateResultRequest } from '../types';
+import { Result } from '../types';
+
+// Note: ResultService is not implemented yet - these are placeholder hooks
+// Results will be implemented when the results API endpoint is available
 
 // Query hooks
-export const useResults = (filters?: ResultFilters) => {
-  return useQuery({
-    queryKey: ['results', filters],
-    queryFn: () => ResultService.getResults(filters),
+export const useResults = () => {
+  return useQuery<Result[]>({
+    queryKey: ['results'],
+    queryFn: () => {
+      // Placeholder - results API not implemented yet
+      return Promise.resolve([]);
+    },
   });
 };
 
 export const useResult = (id: string) => {
-  return useQuery({
+  return useQuery<Result>({
     queryKey: ['results', id],
-    queryFn: () => ResultService.getResult(id),
-    enabled: !!id,
+    queryFn: () => {
+      // Placeholder - individual results not implemented yet
+      throw new Error('Result API not implemented yet');
+    },
+    enabled: false, // Disable until API is ready
   });
 };
 
-// Mutation hooks
+// Mutation hooks - placeholders
 export const useCreateResult = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (result: CreateResultRequest) => ResultService.createResult(result),
+    mutationFn: (result: Omit<Result, 'id' | 'createdAt' | 'updatedAt'>) => {
+      // Placeholder
+      throw new Error('Create result API not implemented yet');
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['results'] });
-      queryClient.invalidateQueries({ queryKey: ['teams'] }); // Invalidate teams for updated stats
-      queryClient.invalidateQueries({ queryKey: ['players'] }); // Invalidate players for updated stats
+      queryClient.invalidateQueries({ queryKey: ['teams'] });
+      queryClient.invalidateQueries({ queryKey: ['players'] });
     },
   });
 };
@@ -36,13 +47,15 @@ export const useUpdateResult = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: ({ id, result }: { id: string; result: UpdateResultRequest }) => 
-      ResultService.updateResult(id, result),
+    mutationFn: ({ id, result }: { id: string; result: Partial<Result> }) => {
+      // Placeholder
+      throw new Error('Update result API not implemented yet');
+    },
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['results'] });
       queryClient.invalidateQueries({ queryKey: ['results', id] });
-      queryClient.invalidateQueries({ queryKey: ['teams'] }); // Invalidate teams for updated stats
-      queryClient.invalidateQueries({ queryKey: ['players'] }); // Invalidate players for updated stats
+      queryClient.invalidateQueries({ queryKey: ['teams'] });
+      queryClient.invalidateQueries({ queryKey: ['players'] });
     },
   });
 };
@@ -51,11 +64,14 @@ export const useDeleteResult = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (id: string) => ResultService.deleteResult(id),
+    mutationFn: (id: string) => {
+      // Placeholder
+      throw new Error('Delete result API not implemented yet');
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['results'] });
-      queryClient.invalidateQueries({ queryKey: ['teams'] }); // Invalidate teams for updated stats
-      queryClient.invalidateQueries({ queryKey: ['players'] }); // Invalidate players for updated stats
+      queryClient.invalidateQueries({ queryKey: ['teams'] });
+      queryClient.invalidateQueries({ queryKey: ['players'] });
     },
   });
 };

@@ -7,7 +7,7 @@ import { Team } from '../types/index';
 export function useTeams() {
   return useQuery<Team[]>({
     queryKey: ['teams'],
-    queryFn: TeamService.getTeams,
+    queryFn: () => TeamService.getTeams(),
   });
 }
 
