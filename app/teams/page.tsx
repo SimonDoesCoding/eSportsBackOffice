@@ -10,6 +10,9 @@ export default function TeamsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTeam, setEditingTeam] = useState<Team | undefined>(undefined);
 
+  // Type-safe helper
+  const teamsData = teams as Team[] | undefined;
+
   const handleAddTeam = () => {
     setEditingTeam(undefined);
     setIsFormOpen(true);
@@ -72,9 +75,9 @@ export default function TeamsPage() {
       </div>
       
       <div className="mt-8">
-        {teams && teams.length > 0 ? (
+        {teamsData && teamsData.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            {teams
+            {teamsData
               .sort((a, b) => a.name.localeCompare(b.name))
               .map((team) => (
               <div key={team.id} className="bg-gray-800 overflow-hidden shadow rounded-lg">

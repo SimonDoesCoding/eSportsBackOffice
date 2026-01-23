@@ -9,7 +9,11 @@ export default function Dashboard() {
   const { data: teams } = useTeams();
   const { data: fixtures } = useFixtures();
 
-  const upcomingFixtures = fixtures || [];
+  // Type-safe helpers
+  const teamsData = teams as Team[] | undefined;
+  const fixturesData = fixtures as Fixture[] | undefined;
+  
+  const upcomingFixtures = fixturesData || [];
   const recentResults: never[] = []; // Results API not implemented yet - empty array
 
   // Calculate overall team stats from game mode win percentages
@@ -34,14 +38,14 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-gray-800 p-6 rounded-lg">
             <h3 className="text-lg font-semibold text-blue-400 mb-2">Teams</h3>
-            <p className="text-2xl font-bold text-white">{teams?.length || 0}</p>
+            <p className="text-2xl font-bold text-white">{teamsData?.length || 0}</p>
             <p className="text-gray-400 text-sm">Total teams</p>
           </div>
           
           <div className="bg-gray-800 p-6 rounded-lg">
             <h3 className="text-lg font-semibold text-green-400 mb-2">Players</h3>
             <p className="text-2xl font-bold text-white">
-              {teams?.reduce((total, team) => total + team.players.length, 0) || 0}
+              {teamsData?.reduce((total, team) => total + team.players.length, 0) || 0}
             </p>
             <p className="text-gray-400 text-sm">Active players</p>
           </div>
@@ -87,11 +91,11 @@ export default function Dashboard() {
           </div>
         )}
 
-        {teams && teams.length > 0 && (
+        {teamsData && teamsData.length > 0 && (
           <div>
             <h3 className="text-xl font-semibold text-white mb-4">Top Teams</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {teams
+              {teamsData
                 .sort((a, b) => getOverallWinRate(b) - getOverallWinRate(a))
                 .slice(0, 6)
                 .map((team) => (

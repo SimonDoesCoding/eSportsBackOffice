@@ -11,6 +11,9 @@ export default function FixturesPage() {
   const [selectedFixture, setSelectedFixture] = useState<Fixture | null>(null);
   const [editingResult, setEditingResult] = useState<Result | undefined>(undefined);
 
+  // Type-safe helper
+  const fixturesData = fixtures as Fixture[] | undefined;
+
   const handleScheduleMatch = () => {
     alert('Fixture scheduling will be implemented when the fixtures API endpoint is available');
   };
@@ -77,11 +80,11 @@ export default function FixturesPage() {
         <div className="sm:flex-auto">
           <h1 className="text-2xl font-semibold text-white">Fixtures</h1>
           <p className="mt-2 text-sm text-gray-400">
-            Schedule and manage matches for {fixtures && fixtures.length > 0 ? fixtures[0].league.name : 'CDL'}. Fixtures are sorted by date (most recent first).
+            Schedule and manage matches for {fixturesData && fixturesData.length > 0 ? fixturesData[0].league.name : 'CDL'}. Fixtures are sorted by date (most recent first).
           </p>
-          {fixtures && fixtures.length > 0 && (
+          {fixturesData && fixturesData.length > 0 && (
             <p className="mt-1 text-xs text-gray-500">
-              Showing fixtures for {fixtures[0].league.name} ({fixtures[0].league.game.name})
+              Showing fixtures for {fixturesData[0].league.name} ({fixturesData[0].league.game.name})
             </p>
           )}
         </div>
@@ -97,9 +100,9 @@ export default function FixturesPage() {
       </div>
       
       <div className="mt-8">
-        {fixtures && fixtures.length > 0 ? (
+        {fixturesData && fixturesData.length > 0 ? (
           <div className="space-y-6">
-            {fixtures
+            {fixturesData
               .sort((a, b) => new Date(b.startDateTime).getTime() - new Date(a.startDateTime).getTime())
               .map((fixture) => (
               <div key={fixture.id} className="bg-gray-800 overflow-hidden shadow rounded-lg">
