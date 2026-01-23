@@ -1,8 +1,21 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Esports Management UI
+
+This is a [Next.js](https://nextjs.org) project for managing esports teams, players, fixtures, and results.
+
+## Prerequisites
+
+- **Node.js 20.9.0 or higher** (required for Next.js)
+- npm or yarn package manager
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies:
+
+```bash
+npm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
@@ -18,7 +31,25 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Features
+
+- **Team Management**: Create, edit, and manage esports teams
+- **Player Management**: View player statistics and team rosters  
+- **Fixture Management**: Schedule and view upcoming matches
+- **Results Management**: Record and view match results
+- **API Integration**: Connected to sitechesports.com API
+- **Docker Support**: Containerized for easy deployment
+
+## API Configuration
+
+The application connects to the esports API at `https://api.sitechesports.com/api`. The API provides:
+- Teams data with game mode win percentages
+- Fixtures data for CDL league
+- Player statistics and roster information
+
+## Docker Deployment
+
+See [DOCKER-HUB-GUIDE.md](./DOCKER-HUB-GUIDE.md) for complete Docker deployment instructions.
 
 ## Learn More
 

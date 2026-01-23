@@ -5,6 +5,7 @@
 ### 1. Prerequisites
 - Docker Hub account (create at https://hub.docker.com)
 - Docker installed and running locally
+- Node.js 20.9.0 or higher (required for Next.js)
 
 ### 2. One-Command Publishing (Windows)
 ```cmd

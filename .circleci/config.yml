@@ -1,13 +1,49 @@
 version: 2.1
 
-jobs:
-  build-and-push-docker:
+# Define orbs for Docker and Node.js
+orbs:
+  docker: circleci/docker@2.2.0
+  node: circleci/node@5.1.0
+
+# Define executors
+executors:
+  docker-executor:
     docker:
       - image: cimg/base:stable
+    resource_class: medium
+  node-executor:
+    docker:
+      - image: cimg/node:20.11.0  # Node.js 20.11.0 for Next.js compatibility
+    resource_class: medium
+
+jobs:
+  # Build and test the application
+  build-and-test:
+    executor: node-executor
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run:
+          name: Run linting
+          command: npm run lint
+      - run:
+          name: Build application
+          command: npm run build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .next
+            - node_modules
+
+  build-and-push-docker:
+    executor: docker-executor
     working_directory: ~/repo
 
     steps:
       - checkout
+      - attach_workspace:
+          at: .
 
       - setup_remote_docker:
           docker_layer_caching: true
@@ -72,9 +108,17 @@ jobs:
             docker push simonaspinall/esports-back-office:latest
 
 workflows:
-  docker-build-and-publish:
+  build-test-and-deploy:
     jobs:
+      - build-and-test:
+          filters:
+            branches:
+              only:
+                - main
+                - development
       - build-and-push-docker:
+          requires:
+            - build-and-test
           filters:
             branches:
               only:
