@@ -5,14 +5,14 @@ import { FixtureService } from '../Services/FixtureService';
 import { Fixture } from '../types/index';
 
 export function useFixtures() {
-  return useQuery({
+  return useQuery<Fixture[]>({
     queryKey: ['fixtures'],
     queryFn: FixtureService.getFixtures,
   });
 }
 
 export function useFixture(id: string) {
-  return useQuery({
+  return useQuery<Fixture>({
     queryKey: ['fixtures', id],
     queryFn: () => FixtureService.getFixture(id),
     enabled: !!id,

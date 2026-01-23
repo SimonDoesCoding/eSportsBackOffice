@@ -2,16 +2,17 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { TeamService } from '../Services/TeamService';
+import { Team } from '../types/index';
 
 export function useTeams() {
-  return useQuery({
+  return useQuery<Team[]>({
     queryKey: ['teams'],
     queryFn: TeamService.getTeams,
   });
 }
 
 export function useTeam(id: string) {
-  return useQuery({
+  return useQuery<Team>({
     queryKey: ['teams', id],
     queryFn: () => TeamService.getTeam(id),
     enabled: !!id,
