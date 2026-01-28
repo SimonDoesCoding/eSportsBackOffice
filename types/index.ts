@@ -94,3 +94,34 @@ export interface Result {
   createdAt?: string;
   updatedAt?: string;
 }
+
+// Client Management Types
+export type ClientStatus = 'active' | 'inactive' | 'pending' | 'suspended';
+
+export interface Client {
+  id: string;
+  clientId: string;
+  name: string;
+  email: string;
+  company?: string;
+  status: ClientStatus;
+  apiKey: string;
+  rabbitMqQueue: string;
+  createdAt: string;
+  updatedAt: string;
+  lastActivity?: string;
+}
+
+export interface CreateClientRequest {
+  name: string;
+  email: string;
+  company?: string;
+}
+
+export interface OnboardClientResponse {
+  client: Client;
+  apiKey: string;
+  rabbitMqQueue: string;
+  success: boolean;
+  message: string;
+}
