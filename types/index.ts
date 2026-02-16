@@ -64,6 +64,11 @@ export interface Team {
 }
 
 // Legacy interfaces for fixtures and results (to be updated when API is available)
+export interface FixtureType {
+  id: string;
+  name: string;
+}
+
 export interface Fixture {
   id: string;
   team1: Team;
@@ -124,4 +129,38 @@ export interface OnboardClientResponse {
   rabbitMqQueue: string;
   success: boolean;
   message: string;
+}
+
+
+// Simulation Types
+export interface SimulationRequest {
+  fixtureId: string;
+  team1Id: string;
+  team2Id: string;
+  seriesLength: number;
+}
+
+export interface SimulationResult {
+  fixtureId: string;
+  team1Score: number;
+  team2Score: number;
+  predictedWinner: string;
+  confidence: number;
+  mapResults?: Array<{
+    mapNumber: number;
+    gameMode: GameMode;
+    winner: string;
+    score?: string;
+  }>;
+  simulationMetadata?: {
+    timestamp: string;
+    version: string;
+    factors: string[];
+  };
+}
+
+export interface SimulationResponse {
+  success: boolean;
+  simulation: SimulationResult;
+  message?: string;
 }

@@ -1,4 +1,4 @@
-import { Fixture } from '../types';
+import { Fixture, FixtureType } from '../types';
 import { apiRequest } from './api';
 
 // CDL League ID
@@ -11,6 +11,10 @@ export class FixtureService {
 
   static async getFixture(id: string): Promise<Fixture> {
     return apiRequest<Fixture>(`/fixtures/${id}`);
+  }
+
+  static async getFixtureTypes(): Promise<FixtureType[]> {
+    return apiRequest<FixtureType[]>('/FixtureTypes');
   }
 
   static async createFixture(fixture: Omit<Fixture, 'id'>): Promise<Fixture> {

@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FixtureService } from '../Services/FixtureService';
-import { Fixture } from '../types/index';
+import { Fixture, FixtureType } from '../types/index';
 
 export function useFixtures() {
   return useQuery<Fixture[]>({
@@ -16,6 +16,13 @@ export function useFixture(id: string) {
     queryKey: ['fixtures', id],
     queryFn: () => FixtureService.getFixture(id),
     enabled: !!id,
+  });
+}
+
+export function useFixtureTypes() {
+  return useQuery<FixtureType[]>({
+    queryKey: ['fixtureTypes'],
+    queryFn: () => FixtureService.getFixtureTypes(),
   });
 }
 
