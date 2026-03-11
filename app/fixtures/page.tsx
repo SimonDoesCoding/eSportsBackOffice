@@ -65,7 +65,7 @@ export default function FixturesPage() {
           `Predicted Score: ${sim.team1Score} - ${sim.team2Score}\n` +
           `Predicted Winner: ${sim.predictedWinner}\n` +
           `Confidence: ${(sim.confidence * 100).toFixed(1)}%\n\n` +
-          `${sim.message || 'Simulation completed successfully'}`
+          `Simulation completed successfully`
         );
       }
     } catch (error) {
@@ -316,7 +316,6 @@ export default function FixturesPage() {
           isOpen={resultFormOpen} 
           onClose={handleCloseResultForm}
           fixture={selectedFixture}
-          result={editingResult}
         />
       )}
 
