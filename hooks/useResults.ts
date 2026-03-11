@@ -4,6 +4,7 @@ import { Result } from '../types';
 // Note: ResultService is not implemented yet - these are placeholder hooks
 // Results will be implemented when the results API endpoint is available
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // Query hooks
 export const useResults = () => {
   return useQuery<Result[]>({
@@ -75,3 +76,5 @@ export const useDeleteResult = () => {
     },
   });
 };
+
+/* eslint-enable @typescript-eslint/no-unused-vars */

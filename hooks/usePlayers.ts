@@ -4,6 +4,7 @@ import { Player } from '../types';
 // Note: PlayerService is not implemented yet - these are placeholder hooks
 // Players are currently managed through the Teams API
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // Query hooks
 export const usePlayers = () => {
   return useQuery<Player[]>({
@@ -86,4 +87,4 @@ export const useTransferPlayer = () => {
       queryClient.invalidateQueries({ queryKey: ['teams'] });
     },
   });
-};
+};/* eslint-enable @typescript-eslint/no-unused-vars */
