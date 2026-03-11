@@ -9,8 +9,14 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_BASE_URL=https://api.sitechesports.com/api
+      - NEXT_PUBLIC_API_BASE_URL=https://localhost:7173/api
       - NEXT_PUBLIC_APP_NAME=Esports Management UI
+      # Auth0 Configuration (for local development)
+      - AUTH0_SECRET=${AUTH0_SECRET:-dev-secret-change-in-production}
+      - AUTH0_BASE_URL=${AUTH0_BASE_URL:-http://localhost:3000}
+      - AUTH0_ISSUER_BASE_URL=${AUTH0_ISSUER_BASE_URL:-https://dev-h624znvggxq2nsnp.us.auth0.com}
+      - AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}
+      - AUTH0_CLIENT_SECRET=${AUTH0_CLIENT_SECRET}
     volumes:
       - .:/app
       - /app/node_modules

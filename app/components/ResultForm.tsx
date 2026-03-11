@@ -7,7 +7,6 @@ interface ResultFormProps {
   isOpen: boolean;
   onClose: () => void;
   fixture: Fixture;
-  result?: any;
 }
 
 type Stage = 'team-scores' | 'map-scores' | 'player-stats';
