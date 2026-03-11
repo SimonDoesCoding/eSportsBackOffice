@@ -245,29 +245,31 @@ export default function FixturesPage() {
                       
                       {/* Action Buttons */}
                       <div className="mt-3 flex flex-col gap-2">
-                        {/* Simulation Button - Always Available */}
-                        <button
-                          onClick={() => handleRunSimulation(fixture)}
-                          disabled={runSimulation.isPending}
-                          className="inline-flex items-center justify-center px-3 py-1 text-xs bg-cyan-600 text-white rounded hover:bg-cyan-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {runSimulation.isPending ? (
-                            <>
-                              <svg className="animate-spin w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                              Running...
-                            </>
-                          ) : (
-                            <>
-                              <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                              </svg>
-                              Run Simulation
-                            </>
-                          )}
-                        </button>
+                        {/* Simulation Button - Only for future fixtures */}
+                        {!isFixtureInPast(fixture.startDateTime) && (
+                          <button
+                            onClick={() => handleRunSimulation(fixture)}
+                            disabled={runSimulation.isPending}
+                            className="inline-flex items-center justify-center px-3 py-1 text-xs bg-cyan-600 text-white rounded hover:bg-cyan-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {runSimulation.isPending ? (
+                              <>
+                                <svg className="animate-spin w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Running...
+                              </>
+                            ) : (
+                              <>
+                                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                                Run Simulation
+                              </>
+                            )}
+                          </button>
+                        )}
                         
                         {/* Result Action Buttons - Only for Past Fixtures */}
                         {isFixtureInPast(fixture.startDateTime) && (
@@ -277,7 +279,7 @@ export default function FixturesPage() {
                                 onClick={() => handleViewEditResult(fixture)}
                                 className="inline-flex items-center justify-center px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
                               >
-                                View/Edit Result
+                                Edit Result
                               </button>
                             ) : (
                               <button

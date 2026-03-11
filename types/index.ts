@@ -100,6 +100,45 @@ export interface Result {
   updatedAt?: string;
 }
 
+// Detailed Result Submission Types
+export interface PlayerMapResultStat {
+  statId: string;
+  statValue: number;
+}
+
+export interface PlayerMapResult {
+  playerId: string;
+  playerMapResultStatsData: PlayerMapResultStat[];
+}
+
+export interface MapResult {
+  gameModeId: string;
+  mapNumber: number;
+  team1Score: number;
+  team2Score: number;
+  playerMapResults: PlayerMapResult[];
+}
+
+export interface CreateResultRequest {
+  fixtureId: string;
+  team1Score: number;
+  team2Score: number;
+  playerMapResultData: MapResult[];
+}
+
+// Game Mode and Stat Types
+export interface GameModeType {
+  id: string;
+  name: string;
+}
+
+export interface StatType {
+  id: string;
+  name: string;
+  abbreviation?: string;
+  category?: string;
+}
+
 // Client Management Types
 export type ClientStatus = 'active' | 'inactive' | 'pending' | 'suspended';
 
