@@ -20,6 +20,7 @@ export default function FixturesPage() {
 
   const handleScheduleMatch = () => {
     setScheduleFormOpen(true);
+    console.log(editingResult);
   };
 
   const handleScheduleSuccess = () => {
