@@ -6,8 +6,8 @@ import Credentials from 'next-auth/providers/credentials';
 const AUTHORIZED_USERS = [
   {
     id: '1',
-    email: 'admin@sitechesports.com',
-    password: 'admin123', // Change this!
+    email: 'simon@sitechesports.com',
+    password: 'SitechPassword1*', // Change this!
     name: 'Admin User',
   },
 ];
