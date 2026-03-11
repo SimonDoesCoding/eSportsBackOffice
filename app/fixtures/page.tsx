@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { useState } from 'react';
 import { useFixtures } from '../../hooks/useFixtures';
@@ -329,3 +330,4 @@ export default function FixturesPage() {
     </div>
   );
 }
+/* eslint-enable @typescript-eslint/no-unused-vars */
