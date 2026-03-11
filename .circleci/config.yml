@@ -24,9 +24,9 @@ jobs:
       - checkout
       - node/install-packages:
           pkg-manager: npm
-      # - run:
-      #     name: Run linting
-      #     command: npm run lint
+      - run:
+          name: Run linting
+          command: npm run lint
       - run:
           name: Build application
           command: npm run build
