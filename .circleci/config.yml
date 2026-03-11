@@ -68,7 +68,7 @@ jobs:
                 NEXT_VERSION="v$MAJOR.$MINOR.$PATCH.dev-$CIRCLE_BUILD_NUM"
               else
                 echo "main branch: Incrementing version tag"
-                PATCH=$((PATCH + 1))
+                MINOR=$((MINOR + 1))
                 NEXT_VERSION="v$MAJOR.$MINOR.$PATCH"
                 echo "Creating tag $NEXT_VERSION"
                 git config user.email "ci@circleci.com"
