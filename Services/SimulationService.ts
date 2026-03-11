@@ -1,4 +1,4 @@
-import { SimulationRequest, SimulationResponse } from '../types';
+import { SimulationResponse } from '../types';
 import { apiRequest } from './api';
 
 export class SimulationService {

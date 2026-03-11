@@ -108,7 +108,6 @@ export function ResultForm({ isOpen, onClose, fixture }: ResultFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [hasDraft, setHasDraft] = useState(false);
 
-  const allPlayers = [...fixture.team1.players, ...fixture.team2.players];
   const team1Players = fixture.team1.players;
   const team2Players = fixture.team2.players;
 
@@ -177,6 +176,7 @@ export function ResultForm({ isOpen, onClose, fixture }: ResultFormProps) {
       const totalMaps = team1Score + team2Score;
       const isSweepScenario = isSweep(team1Score, team2Score);
       const winningTeam = team1Score > team2Score ? 'team1' : 'team2';
+      const allPlayers = [...fixture.team1.players, ...fixture.team2.players];
       
       const initialMaps: MapResult[] = [];
       for (let i = 0; i < totalMaps; i++) {
@@ -213,7 +213,7 @@ export function ResultForm({ isOpen, onClose, fixture }: ResultFormProps) {
       }
       setMaps(initialMaps);
     }
-  }, [stage, maps.length, team1Score, team2Score, allPlayers]);
+  }, [stage, maps.length, team1Score, team2Score, fixture.team1.players, fixture.team2.players]);
 
   const updateMapGameMode = (mapIndex: number, gameModeId: string) => {
     const newMaps = [...maps];

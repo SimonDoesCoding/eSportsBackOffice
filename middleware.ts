@@ -1,8 +1,9 @@
 import { auth } from './auth';
 
-export default auth((req) => {
+export default auth(() => {
   // Middleware logic runs after auth check
   // User is already authenticated if this runs
+  return undefined;
 });
 
 export const config = {

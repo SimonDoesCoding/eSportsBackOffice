@@ -31,7 +31,7 @@ export const useCreatePlayer = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (player: Omit<Player, 'id'>) => {
+    mutationFn: (_player: Omit<Player, 'id'>) => {
       // Placeholder
       throw new Error('Create player API not implemented yet');
     },
@@ -46,7 +46,7 @@ export const useUpdatePlayer = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: ({ id, player }: { id: string; player: Partial<Player> }) => {
+    mutationFn: ({ id: _id, player: _player }: { id: string; player: Partial<Player> }) => {
       // Placeholder
       throw new Error('Update player API not implemented yet');
     },
@@ -62,7 +62,7 @@ export const useDeletePlayer = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (id: string) => {
+    mutationFn: (_id: string) => {
       // Placeholder
       throw new Error('Delete player API not implemented yet');
     },
@@ -77,7 +77,7 @@ export const useTransferPlayer = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: ({ playerId, newTeamId }: { playerId: string; newTeamId: string }) => {
+    mutationFn: ({ playerId: _playerId, newTeamId: _newTeamId }: { playerId: string; newTeamId: string }) => {
       // Placeholder
       throw new Error('Transfer player API not implemented yet');
     },

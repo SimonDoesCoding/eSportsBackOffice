@@ -31,7 +31,7 @@ export const useCreateResult = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (result: Omit<Result, 'id' | 'createdAt' | 'updatedAt'>) => {
+    mutationFn: (_result: Omit<Result, 'id' | 'createdAt' | 'updatedAt'>) => {
       // Placeholder
       throw new Error('Create result API not implemented yet');
     },
@@ -47,7 +47,7 @@ export const useUpdateResult = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: ({ id, result }: { id: string; result: Partial<Result> }) => {
+    mutationFn: ({ id: _id, result: _result }: { id: string; result: Partial<Result> }) => {
       // Placeholder
       throw new Error('Update result API not implemented yet');
     },
@@ -64,7 +64,7 @@ export const useDeleteResult = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (id: string) => {
+    mutationFn: (_id: string) => {
       // Placeholder
       throw new Error('Delete result API not implemented yet');
     },
