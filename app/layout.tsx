@@ -3,7 +3,6 @@ import { Inter } from 'next/font/google'
 import Link from 'next/link'
 import './globals.css'
 import { Providers } from './providers'
-import { UserMenu } from './components/UserMenu'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -35,7 +34,6 @@ export default function RootLayout({
                     <Link href="/fixtures" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Fixtures</Link>
                     <Link href="/results" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Results</Link>
                     <Link href="/clients" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Clients</Link>
-                    <UserMenu />
                   </div>
                 </div>
               </div>
