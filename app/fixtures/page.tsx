@@ -76,7 +76,7 @@ export default function FixturesPage() {
         `Simulation Failed\n\n` +
         `Unable to run simulation for ${fixture.team1.name} vs ${fixture.team2.name}.\n\n` +
         `Error: ${error instanceof Error ? error.message : 'Unknown error'}\n\n` +
-        `Note: Make sure your simulation API endpoint is configured at https://api.sitechesports.com/api/simulation`
+        `Note: Make sure your simulation API endpoint is configured at http://82.165.193.29:5050/api/simulation`
       );
     }
   };

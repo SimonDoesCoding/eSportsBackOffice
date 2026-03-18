@@ -1,5 +1,5 @@
 // Base API configuration and utilities
-const API_BASE_URL = 'https://api.sitechesports.com/api';
+const API_BASE_URL = 'http://82.165.193.29:5050/api';
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {

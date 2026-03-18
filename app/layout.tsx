@@ -3,7 +3,6 @@ import { Inter } from 'next/font/google'
 import Link from 'next/link'
 import './globals.css'
 import { Providers } from './providers'
-import { SessionProvider } from 'next-auth/react'
 import { UserMenu } from './components/UserMenu'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -21,7 +20,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider>
           <Providers>
             <div className="min-h-screen bg-gray-900 text-white">
             <nav className="bg-gray-800 border-b border-gray-700">
@@ -47,7 +45,6 @@ export default function RootLayout({
             </main>
             </div>
           </Providers>
-        </SessionProvider>
       </body>
     </html>
   )

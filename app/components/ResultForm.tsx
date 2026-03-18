@@ -330,7 +330,7 @@ export function ResultForm({ isOpen, onClose, fixture }: ResultFormProps) {
         playerMapResultData: maps
       };
 
-      const response = await fetch(`https://api.sitechesports.com/api/fixtures/${fixture.id}/result`, {
+      const response = await fetch(`http://82.165.193.29:5050/api/fixtures/${fixture.id}/result`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -4,7 +4,7 @@ import { apiRequest } from './api';
 export class SimulationService {
   /**
    * Run a simulation for a fixture
-   * Calls the simulation API at https://api.sitechesports.com/api/simulation
+   * Calls the simulation API at http://82.165.193.29:5050/api/simulation
    */
   static async runSimulation(fixtureId: string): Promise<SimulationResponse> {
     return apiRequest<SimulationResponse>('/simulation', {

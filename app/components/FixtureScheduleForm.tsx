@@ -73,7 +73,7 @@ export function FixtureScheduleForm({ isOpen, onClose, onSuccess }: FixtureSched
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('https://api.sitechesports.com/api/Fixtures', {
+      const response = await fetch('http://82.165.193.29:5050/api/Fixtures', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
