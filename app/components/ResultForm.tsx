@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Fixture, CreateResultRequest, MapResult, GameModeType, StatType } from '../../types';
+import { API_BASE_URL } from '@/Services/api';
 
 interface ResultFormProps {
   isOpen: boolean;
@@ -330,7 +331,7 @@ export function ResultForm({ isOpen, onClose, fixture }: ResultFormProps) {
         playerMapResultData: maps
       };
 
-      const response = await fetch(`http://82.165.193.29:5050/api/fixtures/${fixture.id}/result`, {
+      const response = await fetch(`${API_BASE_URL}fixtures/${fixture.id}/result`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

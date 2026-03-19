@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTeams } from '../../hooks/useTeams';
 import { useFixtureTypes } from '../../hooks/useFixtures';
 import { Team, FixtureType } from '../../types';
+import { API_BASE_URL } from '../../Services/api';
 
 interface FixtureScheduleFormProps {
   isOpen: boolean;
@@ -73,7 +74,7 @@ export function FixtureScheduleForm({ isOpen, onClose, onSuccess }: FixtureSched
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://82.165.193.29:5050/api/Fixtures', {
+      const response = await fetch(`${API_BASE_URL}/Fixtures`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
