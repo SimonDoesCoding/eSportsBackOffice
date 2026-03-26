@@ -6,6 +6,7 @@ import { useFixtures } from '../../hooks/useFixtures';
 import { useRunSimulation } from '../../hooks/useSimulations';
 import { ResultForm } from '../components/ResultForm';
 import { FixtureScheduleForm } from '../components/FixtureScheduleForm';
+import { FixtureComparisonModal } from '../components/FixtureComparisonModal';
 import { Fixture, Result } from '../../types';
 
 export default function FixturesPage() {
@@ -15,6 +16,9 @@ export default function FixturesPage() {
   const [scheduleFormOpen, setScheduleFormOpen] = useState(false);
   const [selectedFixture, setSelectedFixture] = useState<Fixture | null>(null);
   const [editingResult, setEditingResult] = useState<Result | undefined>(undefined);
+  const [isRunningAll, setIsRunningAll] = useState(false);
+  const [allSimProgress, setAllSimProgress] = useState({ current: 0, total: 0 });
+  const [comparisonFixture, setComparisonFixture] = useState<Fixture | null>(null);
 
   // Type-safe helper
   const fixturesData = fixtures as Fixture[] | undefined;
@@ -75,10 +79,52 @@ export default function FixturesPage() {
       alert(
         `Simulation Failed\n\n` +
         `Unable to run simulation for ${fixture.team1.name} vs ${fixture.team2.name}.\n\n` +
-        `Error: ${error instanceof Error ? error.message : 'Unknown error'}\n\n` +
-        `Note: Make sure your simulation API endpoint is configured at https://api.sitechesports.com/api/simulation`
+        `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     }
+  };
+
+  const handleRunAllSimulations = async () => {
+    if (!fixturesData) return;
+    
+    const upcomingFixtures = fixturesData.filter(f => !isFixtureInPast(f.startDateTime));
+    if (upcomingFixtures.length === 0) {
+      alert('No upcoming fixtures to simulate.');
+      return;
+    }
+
+    if (!confirm(`Run simulations for ${upcomingFixtures.length} upcoming fixture(s)?`)) return;
+
+    setIsRunningAll(true);
+    setAllSimProgress({ current: 0, total: upcomingFixtures.length });
+
+    const results: string[] = [];
+    let succeeded = 0;
+    let failed = 0;
+
+    for (let i = 0; i < upcomingFixtures.length; i++) {
+      const fixture = upcomingFixtures[i];
+      setAllSimProgress({ current: i + 1, total: upcomingFixtures.length });
+
+      try {
+        const result = await runSimulation.mutateAsync(fixture.id);
+        if (result.success) {
+          const sim = result.simulation;
+          results.push(`✅ ${fixture.team1.name} vs ${fixture.team2.name}: ${sim.team1Score}-${sim.team2Score} (${sim.predictedWinner})`);
+          succeeded++;
+        }
+      } catch {
+        results.push(`❌ ${fixture.team1.name} vs ${fixture.team2.name}: Failed`);
+        failed++;
+      }
+    }
+
+    setIsRunningAll(false);
+    alert(
+      `All Simulations Complete\n\n` +
+      `Succeeded: ${succeeded} | Failed: ${failed}\n\n` +
+      results.join('\n')
+    );
   };
 
   if (isLoading) {
@@ -125,7 +171,25 @@ export default function FixturesPage() {
             </p>
           )}
         </div>
-        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none flex gap-2">
+          <button
+            type="button"
+            onClick={handleRunAllSimulations}
+            disabled={isRunningAll}
+            className="inline-flex items-center justify-center rounded-md border border-transparent bg-cyan-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isRunningAll ? (
+              <>
+                <svg className="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Simulating {allSimProgress.current}/{allSimProgress.total}...
+              </>
+            ) : (
+              'Run All Simulations'
+            )}
+          </button>
           <button
             type="button"
             onClick={handleScheduleMatch}
@@ -247,6 +311,14 @@ export default function FixturesPage() {
                       
                       {/* Action Buttons */}
                       <div className="mt-3 flex flex-col gap-2">
+                        {/* Compare Button */}
+                        <button
+                          onClick={() => setComparisonFixture(fixture)}
+                          className="inline-flex items-center justify-center px-3 py-1 text-xs bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors"
+                        >
+                          Compare Stats
+                        </button>
+
                         {/* Simulation Button - Only for future fixtures */}
                         {!isFixtureInPast(fixture.startDateTime) && (
                           <button
@@ -327,6 +399,15 @@ export default function FixturesPage() {
         onClose={() => setScheduleFormOpen(false)}
         onSuccess={handleScheduleSuccess}
       />
+
+      {/* Comparison Modal */}
+      {comparisonFixture && (
+        <FixtureComparisonModal
+          isOpen={!!comparisonFixture}
+          onClose={() => setComparisonFixture(null)}
+          fixture={comparisonFixture}
+        />
+      )}
     </div>
   );
 }

@@ -26,6 +26,13 @@ export function useFixtureTypes() {
   });
 }
 
+export function useLeagues() {
+  return useQuery<League[]>({
+    queryKey: ['leagues'],
+    queryFn: () => LeaguesService.getLeagues()
+  });
+}
+
 export function useCreateFixture() {
   const queryClient = useQueryClient();
   

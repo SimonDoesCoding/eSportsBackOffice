@@ -9,7 +9,7 @@ export class SimulationService {
   static async runSimulation(fixtureId: string): Promise<SimulationResponse> {
     return apiRequest<SimulationResponse>('/simulation', {
       method: 'POST',
-      body: JSON.stringify(fixtureId), // Send fixtureId as JSON string (wrapped in quotes)
+      body: `"${fixtureId}"`,
     });
   }
 

@@ -24,6 +24,7 @@ interface FixtureFormData {
 export function FixtureScheduleForm({ isOpen, onClose, onSuccess }: FixtureScheduleFormProps) {
   const { data: teams } = useTeams();
   const { data: fixtureTypes, isLoading: fixtureTypesLoading } = useFixtureTypes();
+  const {data: leagues, isLoading: leaguesLoading} = useLeagues();
   const [formData, setFormData] = useState<FixtureFormData>({
     team1Id: '',
     team2Id: '',
@@ -37,6 +38,7 @@ export function FixtureScheduleForm({ isOpen, onClose, onSuccess }: FixtureSched
 
   const teamsData = teams as Team[] | undefined;
   const fixtureTypesData = fixtureTypes as FixtureType[] | undefined;
+  const leaguesData = leagues as League[] | undefined;
 
   // Set default date/time to tomorrow at 6 PM
   useEffect(() => {
@@ -209,7 +211,29 @@ export function FixtureScheduleForm({ isOpen, onClose, onSuccess }: FixtureSched
               className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               disabled={fixtureTypesLoading}
             >
-              <option value="">Select Fixture Type (Optional)</option>
+              <option value="">Select Fixture Type</option>
+              {fixtureTypesData?.map((type) => (
+                <option key={type.id} value={type.id}>
+                  {type.name}
+                </option>
+              ))}
+            </select>
+            {fixtureTypesLoading && (
+              <p className="text-xs text-gray-400 mt-1">Loading fixture types...</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              League
+            </label>
+            <select
+              value={formData.leagueId}
+              onChange={(e) => setFormData({ ...formData, leagueId: e.target.value })}
+              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={fixtureTypesLoading}
+            >
+              <option value="">Select League</option>
               {fixtureTypesData?.map((type) => (
                 <option key={type.id} value={type.id}>
                   {type.name}
