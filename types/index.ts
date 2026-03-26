@@ -171,6 +171,16 @@ export interface OnboardClientResponse {
 }
 
 
+// League Types
+export interface League {
+  id: string;
+  name: string;
+  game: {
+    id: string;
+    name: string;
+  };
+}
+
 // Simulation Types
 export interface SimulationRequest {
   fixtureId: string;

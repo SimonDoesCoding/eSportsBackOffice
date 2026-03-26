@@ -2,7 +2,8 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { FixtureService } from '../Services/FixtureService';
-import { Fixture, FixtureType } from '../types/index';
+import { LeagueService } from '../Services/LeagueService';
+import { Fixture, FixtureType, League } from '../types/index';
 
 export function useFixtures() {
   return useQuery<Fixture[]>({
@@ -29,7 +30,7 @@ export function useFixtureTypes() {
 export function useLeagues() {
   return useQuery<League[]>({
     queryKey: ['leagues'],
-    queryFn: () => LeaguesService.getLeagues()
+    queryFn: () => LeagueService.getLeagues(),
   });
 }
 
