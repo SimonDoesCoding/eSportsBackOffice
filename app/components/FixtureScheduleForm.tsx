@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useTeams } from '../../hooks/useTeams';
-import { useFixtureTypes } from '../../hooks/useFixtures';
-import { Team, FixtureType } from '../../types';
+import { useFixtureTypes, useLeagues } from '../../hooks/useFixtures';
+import { Team, FixtureType, League } from '../../types';
 import { API_BASE_URL } from '../../Services/api';
 
 interface FixtureScheduleFormProps {
@@ -24,13 +24,13 @@ interface FixtureFormData {
 export function FixtureScheduleForm({ isOpen, onClose, onSuccess }: FixtureScheduleFormProps) {
   const { data: teams } = useTeams();
   const { data: fixtureTypes, isLoading: fixtureTypesLoading } = useFixtureTypes();
-  const {data: leagues, isLoading: leaguesLoading} = useLeagues();
+  const { data: leagues, isLoading: leaguesLoading } = useLeagues();
   const [formData, setFormData] = useState<FixtureFormData>({
     team1Id: '',
     team2Id: '',
     seriesLength: 5,
     fixtureTypeId: '',
-    leagueId: 'a85df024-6762-4f84-8a14-2fe8e4b72bdd', // CDL league ID
+    leagueId: '',
     startDateTime: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -73,6 +73,11 @@ export function FixtureScheduleForm({ isOpen, onClose, onSuccess }: FixtureSched
       return;
     }
 
+    if (!formData.leagueId) {
+      setError('Please select a league');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -105,7 +110,7 @@ export function FixtureScheduleForm({ isOpen, onClose, onSuccess }: FixtureSched
         team2Id: '',
         seriesLength: 5,
         fixtureTypeId: '',
-        leagueId: 'a85df024-6762-4f84-8a14-2fe8e4b72bdd',
+        leagueId: '',
         startDateTime: ''
       });
     } catch (err) {
@@ -225,23 +230,24 @@ export function FixtureScheduleForm({ isOpen, onClose, onSuccess }: FixtureSched
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
-              League
+              League *
             </label>
             <select
+              required
               value={formData.leagueId}
               onChange={(e) => setFormData({ ...formData, leagueId: e.target.value })}
               className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={fixtureTypesLoading}
+              disabled={leaguesLoading}
             >
               <option value="">Select League</option>
-              {fixtureTypesData?.map((type) => (
-                <option key={type.id} value={type.id}>
-                  {type.name}
+              {leaguesData?.map((league) => (
+                <option key={league.id} value={league.id}>
+                  {league.name}
                 </option>
               ))}
             </select>
-            {fixtureTypesLoading && (
-              <p className="text-xs text-gray-400 mt-1">Loading fixture types...</p>
+            {leaguesLoading && (
+              <p className="text-xs text-gray-400 mt-1">Loading leagues...</p>
             )}
           </div>
 
