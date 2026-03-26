@@ -26,5 +26,11 @@ export async function apiRequest<T>(
     throw new ApiError(response.status, `API Error: ${response.statusText}`);
   }
 
-  return response.json();
+  // Handle empty responses (e.g. 204 No Content or empty body)
+  const text = await response.text();
+  if (!text) {
+    return {} as T;
+  }
+
+  return JSON.parse(text);
 }
