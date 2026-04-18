@@ -181,6 +181,11 @@ export interface League {
   };
 }
 
+export interface CreateLeagueRequest {
+  name: string;
+  gameId: string;
+}
+
 // Simulation Types
 export interface SimulationRequest {
   fixtureId: string;
@@ -212,4 +217,49 @@ export interface SimulationResponse {
   success: boolean;
   simulation: SimulationResult;
   message?: string;
+}
+
+// Insights Types
+export interface InsightsTeamRef {
+  id: string;
+  name: string;
+}
+
+export interface InsightsSeriesData {
+  team1_win_probability: number;
+  team2_win_probability: number;
+  favourite: string;
+  sweep_probability: number;
+  distance_probability: number;
+  team1_avg_kills: number;
+  team2_avg_kills: number;
+  team1_avg_deaths: number;
+  team2_avg_deaths: number;
+  team1_avg_kd: number;
+  team2_avg_kd: number;
+  avg_total_maps: number;
+  score_distribution: Record<string, number>;
+}
+
+export interface InsightsMapData {
+  map_index: number;
+  team1_win_probability: number;
+  team2_win_probability: number;
+  team1_avg_kills: number;
+  team2_avg_kills: number;
+  team1_avg_kd: number;
+  team2_avg_kd: number;
+  played_percentage: number;
+}
+
+export interface FixtureInsights {
+  fixture_id: string;
+  simulation_id: string;
+  game_id: string;
+  team1: InsightsTeamRef;
+  team2: InsightsTeamRef;
+  series: InsightsSeriesData;
+  maps: InsightsMapData[];
+  headline_insights: string[];
+  generated_at: string;
 }

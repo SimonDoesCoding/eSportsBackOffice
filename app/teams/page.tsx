@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTeams } from '../../hooks/useTeams';
 import { TeamForm } from '../components/TeamForm';
 import { Team } from '../../types';
+import { getTeamConfig } from '../../utils/teamConfig';
 
 export default function TeamsPage() {
   const { data: teams, isLoading, error } = useTeams();
@@ -84,15 +85,20 @@ export default function TeamsPage() {
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center">
-                      <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center mr-4">
-                        <span className="text-lg font-bold text-white">
-                          {team.name.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
+                      {(() => { const tc = getTeamConfig(team.name); return tc.logo ? (
+                        <img src={tc.logo} alt={team.name} className="h-12 w-12 mr-4" />
+                      ) : (
+                        <div className="h-12 w-12 rounded-full flex items-center justify-center mr-4" style={{ backgroundColor: tc.color }}>
+                          <span className="text-lg font-bold text-white">
+                            {team.name.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      ); })()}
                       <div>
                         <button
                           onClick={() => handleEditTeam(team)}
-                          className="text-xl font-bold text-white hover:text-blue-400 transition-colors duration-200 text-left"
+                          className="text-xl font-bold text-white hover:opacity-80 transition-colors duration-200 text-left"
+                          style={{ color: getTeamConfig(team.name).color }}
                         >
                           {team.name}
                         </button>
@@ -131,19 +137,19 @@ export default function TeamsPage() {
                     <div className="grid grid-cols-3 gap-4">
                       <div className="text-center">
                         <p className="text-xs font-medium text-gray-400">Hardpoint</p>
-                        <p className="text-lg font-bold text-blue-400">
+                        <p className="text-lg font-bold" style={{ color: getTeamConfig(team.name).color }}>
                           {(team.gameModeWinPercents.Hardpoint * 100).toFixed(0)}%
                         </p>
                       </div>
                       <div className="text-center">
                         <p className="text-xs font-medium text-gray-400">Search & Destroy</p>
-                        <p className="text-lg font-bold text-green-400">
+                        <p className="text-lg font-bold" style={{ color: getTeamConfig(team.name).color }}>
                           {(team.gameModeWinPercents.SearchAndDestroy * 100).toFixed(0)}%
                         </p>
                       </div>
                       <div className="text-center">
                         <p className="text-xs font-medium text-gray-400">Overload</p>
-                        <p className="text-lg font-bold text-purple-400">
+                        <p className="text-lg font-bold" style={{ color: getTeamConfig(team.name).color }}>
                           {(team.gameModeWinPercents.Overload * 100).toFixed(0)}%
                         </p>
                       </div>

@@ -2,16 +2,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useFixtures } from '../../hooks/useFixtures';
 import { useRunSimulation } from '../../hooks/useSimulations';
 import { ResultForm } from '../components/ResultForm';
 import { FixtureScheduleForm } from '../components/FixtureScheduleForm';
 import { FixtureComparisonModal } from '../components/FixtureComparisonModal';
 import { Fixture, Result } from '../../types';
+import { getTeamConfig } from '../../utils/teamConfig';
 
 export default function FixturesPage() {
   const { data: fixtures, isLoading, error, refetch } = useFixtures();
   const runSimulation = useRunSimulation();
+  const router = useRouter();
   const [resultFormOpen, setResultFormOpen] = useState(false);
   const [scheduleFormOpen, setScheduleFormOpen] = useState(false);
   const [selectedFixture, setSelectedFixture] = useState<Fixture | null>(null);
@@ -206,35 +209,37 @@ export default function FixturesPage() {
             {fixturesData
               .sort((a, b) => new Date(b.startDateTime).getTime() - new Date(a.startDateTime).getTime())
               .map((fixture) => (
-              <div key={fixture.id} className="bg-gray-800 overflow-hidden shadow rounded-lg">
+              <div key={fixture.id} className="bg-gray-800 overflow-hidden shadow rounded-lg cursor-pointer hover:bg-gray-750 hover:ring-1 hover:ring-gray-600 transition-all" onClick={() => router.push(`/fixtures/${fixture.id}`)}>
                 <div className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-6">
                       <div className="text-center">
                         <div className="flex items-center mb-2">
-                          <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center mr-3">
-                            <span className="text-xs font-bold text-white">
-                              {fixture.team1.name.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-                          <h3 className="text-lg font-medium text-white">{fixture.team1.name}</h3>
+                          {(() => { const tc = getTeamConfig(fixture.team1.name); return tc.logo ? (
+                            <img src={tc.logo} alt={fixture.team1.name} className="h-8 w-8 mr-3" />
+                          ) : (
+                            <div className="h-8 w-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: tc.color }}>
+                              <span className="text-xs font-bold text-white">{fixture.team1.name.charAt(0).toUpperCase()}</span>
+                            </div>
+                          ); })()}
+                          <h3 className="text-lg font-medium" style={{ color: getTeamConfig(fixture.team1.name).color }}>{fixture.team1.name}</h3>
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-xs">
                           <div className="text-center">
                             <p className="text-gray-400">HP</p>
-                            <p className="text-blue-400 font-medium">
+                            <p className="font-medium" style={{ color: getTeamConfig(fixture.team1.name).color }}>
                               {(fixture.team1.gameModeWinPercents.Hardpoint * 100).toFixed(0)}%
                             </p>
                           </div>
                           <div className="text-center">
                             <p className="text-gray-400">SND</p>
-                            <p className="text-green-400 font-medium">
+                            <p className="font-medium" style={{ color: getTeamConfig(fixture.team1.name).color }}>
                               {(fixture.team1.gameModeWinPercents.SearchAndDestroy * 100).toFixed(0)}%
                             </p>
                           </div>
                           <div className="text-center">
                             <p className="text-gray-400">OL</p>
-                            <p className="text-purple-400 font-medium">
+                            <p className="font-medium" style={{ color: getTeamConfig(fixture.team1.name).color }}>
                               {(fixture.team1.gameModeWinPercents.Overload * 100).toFixed(0)}%
                             </p>
                           </div>
@@ -259,29 +264,31 @@ export default function FixturesPage() {
                       
                       <div className="text-center">
                         <div className="flex items-center mb-2">
-                          <div className="h-8 w-8 rounded-full bg-red-600 flex items-center justify-center mr-3">
-                            <span className="text-xs font-bold text-white">
-                              {fixture.team2.name.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-                          <h3 className="text-lg font-medium text-white">{fixture.team2.name}</h3>
+                          {(() => { const tc = getTeamConfig(fixture.team2.name); return tc.logo ? (
+                            <img src={tc.logo} alt={fixture.team2.name} className="h-8 w-8 mr-3" />
+                          ) : (
+                            <div className="h-8 w-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: tc.color }}>
+                              <span className="text-xs font-bold text-white">{fixture.team2.name.charAt(0).toUpperCase()}</span>
+                            </div>
+                          ); })()}
+                          <h3 className="text-lg font-medium" style={{ color: getTeamConfig(fixture.team2.name).color }}>{fixture.team2.name}</h3>
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-xs">
                           <div className="text-center">
                             <p className="text-gray-400">HP</p>
-                            <p className="text-blue-400 font-medium">
+                            <p className="font-medium" style={{ color: getTeamConfig(fixture.team2.name).color }}>
                               {(fixture.team2.gameModeWinPercents.Hardpoint * 100).toFixed(0)}%
                             </p>
                           </div>
                           <div className="text-center">
                             <p className="text-gray-400">SND</p>
-                            <p className="text-green-400 font-medium">
+                            <p className="font-medium" style={{ color: getTeamConfig(fixture.team2.name).color }}>
                               {(fixture.team2.gameModeWinPercents.SearchAndDestroy * 100).toFixed(0)}%
                             </p>
                           </div>
                           <div className="text-center">
                             <p className="text-gray-400">OL</p>
-                            <p className="text-purple-400 font-medium">
+                            <p className="font-medium" style={{ color: getTeamConfig(fixture.team2.name).color }}>
                               {(fixture.team2.gameModeWinPercents.Overload * 100).toFixed(0)}%
                             </p>
                           </div>
@@ -310,7 +317,7 @@ export default function FixturesPage() {
                       <p className="text-sm text-blue-400 mt-1">{fixture.league.name}</p>
                       
                       {/* Action Buttons */}
-                      <div className="mt-3 flex flex-col gap-2">
+                      <div className="mt-3 flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
                         {/* Compare Button */}
                         <button
                           onClick={() => setComparisonFixture(fixture)}

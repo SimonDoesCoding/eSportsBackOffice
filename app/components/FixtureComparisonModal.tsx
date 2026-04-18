@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Fixture, Player, HardpointStats, SearchAndDestroyStats, OverloadStats } from '../../types';
+import { getTeamConfig } from '../../utils/teamConfig';
 
 interface FixtureComparisonModalProps {
   isOpen: boolean;
@@ -68,6 +69,8 @@ function TeamStatsSection({ fixture }: { fixture: Fixture }) {
 function HardpointSection({ fixture }: { fixture: Fixture }) {
   const t1Players = fixture.team1.players.sort((a, b) => a.name.localeCompare(b.name));
   const t2Players = fixture.team2.players.sort((a, b) => a.name.localeCompare(b.name));
+  const t1c = getTeamConfig(fixture.team1.name).color;
+  const t2c = getTeamConfig(fixture.team2.name).color;
   const avgStat = (players: Player[], fn: (s: HardpointStats) => number) =>
     players.length ? players.reduce((sum, p) => sum + fn(p.gameModePlayerStats.Hardpoint), 0) / players.length : 0;
 
@@ -88,9 +91,9 @@ function HardpointSection({ fixture }: { fixture: Fixture }) {
         return (
           <div key={p1.id} className="bg-gray-700 rounded-lg p-4">
             <div className="grid grid-cols-3 mb-3">
-              <div className="text-right pr-4 text-blue-400 font-medium text-sm">{p1.name}</div>
+              <div className="text-right pr-4 font-medium text-sm" style={{ color: t1c }}>{p1.name}</div>
               <div className="text-center text-gray-500 text-xs">vs</div>
-              <div className="text-left pl-4 text-red-400 font-medium text-sm">{p2.name}</div>
+              <div className="text-left pl-4 font-medium text-sm" style={{ color: t2c }}>{p2.name}</div>
             </div>
             <StatRow label="K/D" val1={s1.KdRatio} val2={s2.KdRatio} format="ratio" />
             <StatRow label="Kills/Map" val1={s1.KillsPerMap} val2={s2.KillsPerMap} />
@@ -106,6 +109,8 @@ function HardpointSection({ fixture }: { fixture: Fixture }) {
 function SndSection({ fixture }: { fixture: Fixture }) {
   const t1Players = fixture.team1.players.sort((a, b) => a.name.localeCompare(b.name));
   const t2Players = fixture.team2.players.sort((a, b) => a.name.localeCompare(b.name));
+  const t1c = getTeamConfig(fixture.team1.name).color;
+  const t2c = getTeamConfig(fixture.team2.name).color;
   const avgStat = (players: Player[], fn: (s: SearchAndDestroyStats) => number) =>
     players.length ? players.reduce((sum, p) => sum + fn(p.gameModePlayerStats.SearchAndDestroy), 0) / players.length : 0;
 
@@ -128,9 +133,9 @@ function SndSection({ fixture }: { fixture: Fixture }) {
         return (
           <div key={p1.id} className="bg-gray-700 rounded-lg p-4">
             <div className="grid grid-cols-3 mb-3">
-              <div className="text-right pr-4 text-blue-400 font-medium text-sm">{p1.name}</div>
+              <div className="text-right pr-4 font-medium text-sm" style={{ color: t1c }}>{p1.name}</div>
               <div className="text-center text-gray-500 text-xs">vs</div>
-              <div className="text-left pl-4 text-red-400 font-medium text-sm">{p2.name}</div>
+              <div className="text-left pl-4 font-medium text-sm" style={{ color: t2c }}>{p2.name}</div>
             </div>
             <StatRow label="K/D" val1={s1.KdRatio} val2={s2.KdRatio} format="ratio" />
             <StatRow label="Kills/Round" val1={s1.KillsPerRound} val2={s2.KillsPerRound} format="ratio" />
@@ -147,6 +152,8 @@ function SndSection({ fixture }: { fixture: Fixture }) {
 function OverloadSection({ fixture }: { fixture: Fixture }) {
   const t1Players = fixture.team1.players.sort((a, b) => a.name.localeCompare(b.name));
   const t2Players = fixture.team2.players.sort((a, b) => a.name.localeCompare(b.name));
+  const t1c = getTeamConfig(fixture.team1.name).color;
+  const t2c = getTeamConfig(fixture.team2.name).color;
   const avgStat = (players: Player[], fn: (s: OverloadStats) => number) =>
     players.length ? players.reduce((sum, p) => sum + fn(p.gameModePlayerStats.Overload), 0) / players.length : 0;
 
@@ -167,9 +174,9 @@ function OverloadSection({ fixture }: { fixture: Fixture }) {
         return (
           <div key={p1.id} className="bg-gray-700 rounded-lg p-4">
             <div className="grid grid-cols-3 mb-3">
-              <div className="text-right pr-4 text-blue-400 font-medium text-sm">{p1.name}</div>
+              <div className="text-right pr-4 font-medium text-sm" style={{ color: t1c }}>{p1.name}</div>
               <div className="text-center text-gray-500 text-xs">vs</div>
-              <div className="text-left pl-4 text-red-400 font-medium text-sm">{p2.name}</div>
+              <div className="text-left pl-4 font-medium text-sm" style={{ color: t2c }}>{p2.name}</div>
             </div>
             <StatRow label="K/D" val1={s1.KdRatio} val2={s2.KdRatio} format="ratio" />
             <StatRow label="Kills/Map" val1={s1.KillsPerMap} val2={s2.KillsPerMap} />
@@ -212,19 +219,27 @@ export function FixtureComparisonModal({ isOpen, onClose, fixture }: FixtureComp
           <div className="grid grid-cols-3 mt-4">
             <div className="text-right pr-4">
               <div className="flex items-center justify-end space-x-2">
-                <span className="text-blue-400 font-semibold">{fixture.team1.name}</span>
-                <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
-                  <span className="text-xs font-bold">{fixture.team1.name.charAt(0)}</span>
-                </div>
+                <span className="font-semibold" style={{ color: getTeamConfig(fixture.team1.name).color }}>{fixture.team1.name}</span>
+                {(() => { const tc = getTeamConfig(fixture.team1.name); return tc.logo ? (
+                  <img src={tc.logo} alt={fixture.team1.name} className="h-8 w-8" />
+                ) : (
+                  <div className="h-8 w-8 rounded-full flex items-center justify-center" style={{ backgroundColor: tc.color }}>
+                    <span className="text-xs font-bold">{fixture.team1.name.charAt(0)}</span>
+                  </div>
+                ); })()}
               </div>
             </div>
             <div className="text-center text-gray-500 text-lg font-bold self-center">VS</div>
             <div className="text-left pl-4">
               <div className="flex items-center space-x-2">
-                <div className="h-8 w-8 rounded-full bg-red-600 flex items-center justify-center">
-                  <span className="text-xs font-bold">{fixture.team2.name.charAt(0)}</span>
-                </div>
-                <span className="text-red-400 font-semibold">{fixture.team2.name}</span>
+                {(() => { const tc = getTeamConfig(fixture.team2.name); return tc.logo ? (
+                  <img src={tc.logo} alt={fixture.team2.name} className="h-8 w-8" />
+                ) : (
+                  <div className="h-8 w-8 rounded-full flex items-center justify-center" style={{ backgroundColor: tc.color }}>
+                    <span className="text-xs font-bold">{fixture.team2.name.charAt(0)}</span>
+                  </div>
+                ); })()}
+                <span className="font-semibold" style={{ color: getTeamConfig(fixture.team2.name).color }}>{fixture.team2.name}</span>
               </div>
             </div>
           </div>
