@@ -2,6 +2,7 @@
 
 import { use, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useFixture } from '../../../hooks/useFixtures';
 import { useFixtureInsights } from '../../../hooks/useInsights';
 import { InsightsMapData } from '../../../types';
@@ -232,7 +233,7 @@ export default function FixtureDetailPage({ params }: { params: Promise<{ id: st
           <div className="flex items-center space-x-6">
             <div className="text-center">
               {t1Config.logo ? (
-                <img src={t1Config.logo} alt={t1Name} className="h-12 w-12 mx-auto mb-2" />
+                <Image src={t1Config.logo} alt={t1Name} width={48} height={48} className="mx-auto mb-2" />
               ) : (
                 <div className="h-12 w-12 rounded-full flex items-center justify-center mx-auto mb-2" style={{ backgroundColor: t1Config.color }}>
                   <span className="text-lg font-bold">{t1Name.charAt(0)}</span>
@@ -257,7 +258,7 @@ export default function FixtureDetailPage({ params }: { params: Promise<{ id: st
             </div>
             <div className="text-center">
               {t2Config.logo ? (
-                <img src={t2Config.logo} alt={t2Name} className="h-12 w-12 mx-auto mb-2" />
+                <Image src={t2Config.logo} alt={t2Name} width={48} height={48} className="mx-auto mb-2" />
               ) : (
                 <div className="h-12 w-12 rounded-full flex items-center justify-center mx-auto mb-2" style={{ backgroundColor: t2Config.color }}>
                   <span className="text-lg font-bold">{t2Name.charAt(0)}</span>

@@ -10,6 +10,10 @@ const nextConfig = {
         protocol: 'http',
         hostname: 'localhost',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.blz-contentstack.com',
+      },
     ],
     unoptimized: process.env.NODE_ENV === 'development',
   },

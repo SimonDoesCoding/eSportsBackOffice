@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Fixture, Player, HardpointStats, SearchAndDestroyStats, OverloadStats } from '../../types';
 import { getTeamConfig } from '../../utils/teamConfig';
+import Image from 'next/image';
 
 interface FixtureComparisonModalProps {
   isOpen: boolean;
@@ -221,7 +222,7 @@ export function FixtureComparisonModal({ isOpen, onClose, fixture }: FixtureComp
               <div className="flex items-center justify-end space-x-2">
                 <span className="font-semibold" style={{ color: getTeamConfig(fixture.team1.name).color }}>{fixture.team1.name}</span>
                 {(() => { const tc = getTeamConfig(fixture.team1.name); return tc.logo ? (
-                  <img src={tc.logo} alt={fixture.team1.name} className="h-8 w-8" />
+                  <Image src={tc.logo} alt={fixture.team1.name} width={32} height={32} />
                 ) : (
                   <div className="h-8 w-8 rounded-full flex items-center justify-center" style={{ backgroundColor: tc.color }}>
                     <span className="text-xs font-bold">{fixture.team1.name.charAt(0)}</span>
@@ -233,7 +234,7 @@ export function FixtureComparisonModal({ isOpen, onClose, fixture }: FixtureComp
             <div className="text-left pl-4">
               <div className="flex items-center space-x-2">
                 {(() => { const tc = getTeamConfig(fixture.team2.name); return tc.logo ? (
-                  <img src={tc.logo} alt={fixture.team2.name} className="h-8 w-8" />
+                  <Image src={tc.logo} alt={fixture.team2.name} width={32} height={32} />
                 ) : (
                   <div className="h-8 w-8 rounded-full flex items-center justify-center" style={{ backgroundColor: tc.color }}>
                     <span className="text-xs font-bold">{fixture.team2.name.charAt(0)}</span>

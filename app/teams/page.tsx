@@ -5,6 +5,7 @@ import { useTeams } from '../../hooks/useTeams';
 import { TeamForm } from '../components/TeamForm';
 import { Team } from '../../types';
 import { getTeamConfig } from '../../utils/teamConfig';
+import Image from 'next/image';
 
 export default function TeamsPage() {
   const { data: teams, isLoading, error } = useTeams();
@@ -86,7 +87,7 @@ export default function TeamsPage() {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center">
                       {(() => { const tc = getTeamConfig(team.name); return tc.logo ? (
-                        <img src={tc.logo} alt={team.name} className="h-12 w-12 mr-4" />
+                        <Image src={tc.logo} alt={team.name} width={48} height={48} className="mr-4" />
                       ) : (
                         <div className="h-12 w-12 rounded-full flex items-center justify-center mr-4" style={{ backgroundColor: tc.color }}>
                           <span className="text-lg font-bold text-white">

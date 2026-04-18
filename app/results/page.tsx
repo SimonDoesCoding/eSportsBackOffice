@@ -3,6 +3,8 @@
 import { useFixtures } from '../../hooks/useFixtures';
 import { Fixture } from '../../types';
 import { getTeamConfig } from '../../utils/teamConfig';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function ResultsPage() {
   const { data: fixtures, isLoading, error } = useFixtures();
@@ -59,12 +61,12 @@ export default function ResultsPage() {
                 <h3 className="mt-2 text-sm font-medium text-gray-300">No results yet</h3>
                 <p className="mt-1 text-sm text-gray-400">Results will appear here once matches are completed.</p>
                 <div className="mt-6">
-                  <a
+                  <Link
                     href="/fixtures"
                     className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
                   >
                     Go to Fixtures
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -84,7 +86,7 @@ export default function ResultsPage() {
                       <div className="flex-1 text-center">
                         <div className="flex items-center justify-center mb-2">
                           {(() => { const tc = getTeamConfig(fixture.team1.name); return tc.logo ? (
-                            <img src={tc.logo} alt={fixture.team1.name} className="h-10 w-10 mr-3" />
+                            <Image src={tc.logo} alt={fixture.team1.name} width={40} height={40} className="mr-3" />
                           ) : (
                             <div className="h-10 w-10 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: tc.color }}>
                               <span className="text-sm font-bold text-white">{fixture.team1.name.charAt(0).toUpperCase()}</span>
@@ -117,7 +119,7 @@ export default function ResultsPage() {
                             {fixture.team2.name}
                           </h3>
                           {(() => { const tc = getTeamConfig(fixture.team2.name); return tc.logo ? (
-                            <img src={tc.logo} alt={fixture.team2.name} className="h-10 w-10 ml-3" />
+                            <Image src={tc.logo} alt={fixture.team2.name} width={40} height={40} className="ml-3" />
                           ) : (
                             <div className="h-10 w-10 rounded-full flex items-center justify-center ml-3" style={{ backgroundColor: tc.color }}>
                               <span className="text-sm font-bold text-white">{fixture.team2.name.charAt(0).toUpperCase()}</span>

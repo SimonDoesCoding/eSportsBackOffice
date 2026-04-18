@@ -1,5 +1,4 @@
 'use client';
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -10,6 +9,7 @@ import { FixtureScheduleForm } from '../components/FixtureScheduleForm';
 import { FixtureComparisonModal } from '../components/FixtureComparisonModal';
 import { Fixture, Result } from '../../types';
 import { getTeamConfig } from '../../utils/teamConfig';
+import Image from 'next/image';
 
 export default function FixturesPage() {
   const { data: fixtures, isLoading, error, refetch } = useFixtures();
@@ -216,7 +216,7 @@ export default function FixturesPage() {
                       <div className="text-center">
                         <div className="flex items-center mb-2">
                           {(() => { const tc = getTeamConfig(fixture.team1.name); return tc.logo ? (
-                            <img src={tc.logo} alt={fixture.team1.name} className="h-8 w-8 mr-3" />
+                            <Image src={tc.logo} alt={fixture.team1.name} width={32} height={32} className="mr-3" />
                           ) : (
                             <div className="h-8 w-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: tc.color }}>
                               <span className="text-xs font-bold text-white">{fixture.team1.name.charAt(0).toUpperCase()}</span>
@@ -265,7 +265,7 @@ export default function FixturesPage() {
                       <div className="text-center">
                         <div className="flex items-center mb-2">
                           {(() => { const tc = getTeamConfig(fixture.team2.name); return tc.logo ? (
-                            <img src={tc.logo} alt={fixture.team2.name} className="h-8 w-8 mr-3" />
+                            <Image src={tc.logo} alt={fixture.team2.name} width={32} height={32} className="mr-3" />
                           ) : (
                             <div className="h-8 w-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: tc.color }}>
                               <span className="text-xs font-bold text-white">{fixture.team2.name.charAt(0).toUpperCase()}</span>
@@ -418,4 +418,3 @@ export default function FixturesPage() {
     </div>
   );
 }
-/* eslint-enable @typescript-eslint/no-unused-vars */
