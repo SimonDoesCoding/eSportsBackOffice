@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -90,13 +90,26 @@ export default function FixturesPage() {
   const handleRunAllSimulations = async () => {
     if (!fixturesData) return;
     
-    const upcomingFixtures = fixturesData.filter(f => !isFixtureInPast(f.startDateTime));
+    // Get next Friday-Sunday window
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const daysUntilFriday = dayOfWeek <= 5 ? 5 - dayOfWeek : 6;
+    const friday = new Date(now);
+    friday.setDate(now.getDate() + daysUntilFriday);
+    friday.setHours(0, 0, 0, 0);
+    const monday = new Date(friday);
+    monday.setDate(friday.getDate() + 3);
+    monday.setHours(6, 0, 0, 0); // Extend to Mon 06:00 to cover late US Sunday matches
+    const upcomingFixtures = fixturesData.filter(f => {
+      const d = new Date(f.startDateTime);
+      return d >= friday && d < monday;
+    });
     if (upcomingFixtures.length === 0) {
-      alert('No upcoming fixtures to simulate.');
+      alert('No fixtures found for the upcoming weekend (Fri-Sun).');
       return;
     }
 
-    if (!confirm(`Run simulations for ${upcomingFixtures.length} upcoming fixture(s)?`)) return;
+    if (!confirm(`Run simulations for ${upcomingFixtures.length} weekend fixture(s)?`)) return;
 
     setIsRunningAll(true);
     setAllSimProgress({ current: 0, total: upcomingFixtures.length });
@@ -113,11 +126,11 @@ export default function FixturesPage() {
         const result = await runSimulation.mutateAsync(fixture.id);
         if (result.success) {
           const sim = result.simulation;
-          results.push(`✅ ${fixture.team1.name} vs ${fixture.team2.name}: ${sim.team1Score}-${sim.team2Score} (${sim.predictedWinner})`);
+          results.push(`? ${fixture.team1.name} vs ${fixture.team2.name}: ${sim.team1Score}-${sim.team2Score} (${sim.predictedWinner})`);
           succeeded++;
         }
       } catch {
-        results.push(`❌ ${fixture.team1.name} vs ${fixture.team2.name}: Failed`);
+        results.push(`? ${fixture.team1.name} vs ${fixture.team2.name}: Failed`);
         failed++;
       }
     }
@@ -190,7 +203,7 @@ export default function FixturesPage() {
                 Simulating {allSimProgress.current}/{allSimProgress.total}...
               </>
             ) : (
-              'Run All Simulations'
+              'Simulate Weekend Fixtures'
             )}
           </button>
           <button
