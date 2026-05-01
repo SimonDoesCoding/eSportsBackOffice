@@ -5,7 +5,7 @@ import { getTeamConfig } from '../../utils/teamConfig';
 
 interface SocialPostModalProps {
   fixtureId: string;
-  insights: Record<string, unknown> | null;
+  insights: unknown;
   onClose: () => void;
 }
 
