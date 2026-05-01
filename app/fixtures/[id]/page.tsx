@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { use, useState } from 'react';
 import Link from 'next/link';
@@ -7,6 +7,7 @@ import { useFixture } from '../../../hooks/useFixtures';
 import { useFixtureInsights } from '../../../hooks/useInsights';
 import { InsightsMapData } from '../../../types';
 import { getTeamConfig, brand } from '../../../utils/teamConfig';
+import { SocialPostModal } from '../../components/SocialPostModal';
 
 const MAP_GAME_MODES = ['Hardpoint', 'S&D', 'Overload', 'Hardpoint', 'S&D', 'Overload', 'S&D'];
 
@@ -184,7 +185,7 @@ export default function FixtureDetailPage({ params }: { params: Promise<{ id: st
   const { data: fixture, isLoading: fixtureLoading } = useFixture(id);
   const { data: insights, isLoading: insightsLoading, error: insightsError } = useFixtureInsights(id);
   const [activeTab, setActiveTab] = useState<Tab>('overview');
-
+  const [showPostModal, setShowPostModal] = useState(false);
   if (fixtureLoading) {
     return (
       <div className="px-4 py-6">
@@ -203,7 +204,7 @@ export default function FixtureDetailPage({ params }: { params: Promise<{ id: st
           <p className="text-red-300">Fixture not found</p>
         </div>
         <Link href="/fixtures" className="text-sm mt-4 inline-block" style={{ color: brand.coral }}>
-          ← Back to Fixtures
+          ? Back to Fixtures
         </Link>
       </div>
     );
@@ -224,7 +225,7 @@ export default function FixtureDetailPage({ params }: { params: Promise<{ id: st
     <div className="px-4 py-6">
       {/* Back link */}
       <Link href="/fixtures" className="text-sm mb-4 inline-block" style={{ color: brand.coral }}>
-        ← Back to Fixtures
+        ? Back to Fixtures
       </Link>
 
       {/* Header */}
@@ -329,6 +330,7 @@ function OverviewTab({ insights, insightsLoading, insightsError, fixture, t1Name
   t1Color: string;
   t2Color: string;
 }) {
+  const [showPostModal, setShowPostModal] = useState(false);
   if (insightsLoading) {
     return (
       <div className="animate-pulse space-y-4">
@@ -368,7 +370,21 @@ function OverviewTab({ insights, insightsLoading, insightsError, fixture, t1Name
         <p className="text-xs text-gray-500 mt-3">
           Generated {new Date(insights.generated_at).toLocaleString()}
         </p>
+        <button
+          onClick={() => setShowPostModal(true)}
+          className="mt-3 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-all"
+        >
+          Generate Social Post
+        </button>
       </div>
+
+      {showPostModal && (
+        <SocialPostModal
+          fixtureId={fixture.id}
+          insights={insights}
+          onClose={() => setShowPostModal(false)}
+        />
+      )}
 
       {/* Series Win Probability */}
       <div className="bg-gray-800 rounded-lg p-6">

@@ -179,7 +179,7 @@ export default function FixturesPage() {
         <div className="sm:flex-auto">
           <h1 className="text-2xl font-semibold text-white">Fixtures</h1>
           <p className="mt-2 text-sm text-gray-400">
-            Schedule and manage matches for {fixturesData && fixturesData.length > 0 ? fixturesData[0].league.name : 'CDL'}. Fixtures are sorted by date (most recent first).
+            Schedule and manage matches for {fixturesData && fixturesData.length > 0 ? fixturesData[0].league.name : 'CDL'}. Showing upcoming fixtures only. Past fixtures are on the Results page.
           </p>
           {fixturesData && fixturesData.length > 0 && (
             <p className="mt-1 text-xs text-gray-500">
@@ -220,7 +220,8 @@ export default function FixturesPage() {
         {fixturesData && fixturesData.length > 0 ? (
           <div className="space-y-6">
             {fixturesData
-              .sort((a, b) => new Date(b.startDateTime).getTime() - new Date(a.startDateTime).getTime())
+              .filter(f => !isFixtureInPast(f.startDateTime))
+              .sort((a, b) => new Date(a.startDateTime).getTime() - new Date(b.startDateTime).getTime())
               .map((fixture) => (
               <div key={fixture.id} className="bg-gray-800 overflow-hidden shadow rounded-lg cursor-pointer hover:bg-gray-750 hover:ring-1 hover:ring-gray-600 transition-all" onClick={() => router.push(`/fixtures/${fixture.id}`)}>
                 <div className="p-6">
