@@ -185,7 +185,6 @@ export default function FixtureDetailPage({ params }: { params: Promise<{ id: st
   const { data: fixture, isLoading: fixtureLoading } = useFixture(id);
   const { data: insights, isLoading: insightsLoading, error: insightsError } = useFixtureInsights(id);
   const [activeTab, setActiveTab] = useState<Tab>('overview');
-  const [showPostModal, setShowPostModal] = useState(false);
   if (fixtureLoading) {
     return (
       <div className="px-4 py-6">

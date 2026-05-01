@@ -12,9 +12,6 @@ interface SocialPostModalProps {
 export function SocialPostModal({ fixtureId, insights, onClose }: SocialPostModalProps) {
   const [platform, setPlatform] = useState<'linkedin' | 'instagram'>('linkedin');
   const [content, setContent] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
   const [cardLoading, setCardLoading] = useState(true);
 
@@ -103,22 +100,6 @@ ${dataBlock}`;
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      const res = await fetch('/api/save-post', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fixtureId, platform, content }),
-      });
-      if (res.ok) setSaved(true);
-      else alert('Failed to save');
-    } catch {
-      alert('Failed to save');
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 overflow-y-auto py-8" onClick={onClose}>
@@ -173,7 +154,7 @@ ${dataBlock}`;
                 Download Image
               </button>
             </div>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+
             <div className="relative">
               {cardLoading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-900 rounded-lg">
@@ -183,7 +164,7 @@ ${dataBlock}`;
                   </svg>
                 </div>
               )}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+
               <img src={getCardUrl()} alt="Match preview" className="w-full rounded-lg border border-gray-700" onLoad={() => setCardLoading(false)} />
             </div>
           </div>

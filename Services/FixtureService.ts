@@ -1,8 +1,7 @@
-import { Fixture, FixtureType } from '../types';
+﻿import { Fixture, FixtureType } from '../types';
 import { apiRequest } from './api';
 
 // CDL League ID
-const CDL_LEAGUE_ID = 'a85df024-6762-4f84-8a14-2fe8e4b72bdd';
 
 export class FixtureService {
   static async getFixtures(): Promise<Fixture[]> {
