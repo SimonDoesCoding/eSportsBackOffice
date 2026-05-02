@@ -24,7 +24,7 @@ export function SocialPostModal({ fixtureId, insights, onClose }: SocialPostModa
     const scoreDist = series.score_distribution as Record<string, number>;
     const topScore = Object.entries(scoreDist).sort((a, b) => b[1] - a[1])[0];
 
-    const maps = insights.maps as Record<string, unknown>[];
+    const mapProbs = (data.maps as Record<string, unknown>[]).slice(0, 5).map(m => Math.round((m.team1_win_probability as number) * 100)).join(',');
 
 
     const params = new URLSearchParams({
