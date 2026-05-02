@@ -58,9 +58,9 @@ export function SocialPostModal({ fixtureId, insights, onClose }: SocialPostModa
 
   const handleGenerate = () => {
     if (!insights) return;
-    const series = insights.series as Record<string, unknown>;
     const data2 = insights as Record<string, unknown>;
     const series = data2.series as Record<string, unknown>;
+    const team1 = data2.team1 as Record<string, string>;
     const team1 = data2.team1 as Record<string, string>;
     const team2 = data2.team2 as Record<string, string>;
     const maps = data2.maps as Record<string, unknown>[];
