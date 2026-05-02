@@ -25,7 +25,7 @@ export function SocialPostModal({ fixtureId, insights, onClose }: SocialPostModa
     const topScore = Object.entries(scoreDist).sort((a, b) => b[1] - a[1])[0];
 
     const maps = insights.maps as Record<string, unknown>[];
-    const maps = data.maps as Record<string, unknown>[];
+
 
     const params = new URLSearchParams({
       team1: team1.name,
@@ -167,6 +167,7 @@ ${dataBlock}`;
                 </div>
               )}
 
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={getCardUrl()} alt="Match preview" className="w-full rounded-lg border border-gray-700" onLoad={() => setCardLoading(false)} />
             </div>
           </div>
