@@ -17,14 +17,15 @@ export function SocialPostModal({ fixtureId, insights, onClose }: SocialPostModa
 
   const getCardUrl = () => {
     if (!insights) return '';
-    const series = insights.series as Record<string, unknown>;
-    const team1 = insights.team1 as Record<string, string>;
-    const team2 = insights.team2 as Record<string, string>;
+    const data = insights as Record<string, unknown>;
+    const series = data.series as Record<string, unknown>;
+    const team1 = data.team1 as Record<string, string>;
+    const team2 = data.team2 as Record<string, string>;
     const scoreDist = series.score_distribution as Record<string, number>;
     const topScore = Object.entries(scoreDist).sort((a, b) => b[1] - a[1])[0];
 
     const maps = insights.maps as Record<string, unknown>[];
-    const mapProbs = maps.slice(0, 5).map(m => Math.round((m.team1_win_probability as number) * 100)).join(',');
+    const maps = data.maps as Record<string, unknown>[];
 
     const params = new URLSearchParams({
       team1: team1.name,
@@ -58,10 +59,11 @@ export function SocialPostModal({ fixtureId, insights, onClose }: SocialPostModa
   const handleGenerate = () => {
     if (!insights) return;
     const series = insights.series as Record<string, unknown>;
-    const team1 = insights.team1 as Record<string, string>;
-    const team2 = insights.team2 as Record<string, string>;
-    const maps = insights.maps as Record<string, unknown>[];
-    const headlines = insights.headline_insights as string[];
+    const data2 = insights as Record<string, unknown>;
+    const series = data2.series as Record<string, unknown>;
+    const team1 = data2.team1 as Record<string, string>;
+    const team2 = data2.team2 as Record<string, string>;
+    const maps = data2.maps as Record<string, unknown>[];
     const scoreDist = series.score_distribution as Record<string, number>;
     const topScore = Object.entries(scoreDist).sort((a, b) => b[1] - a[1])[0];
 
