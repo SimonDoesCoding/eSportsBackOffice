@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { getTeamConfig } from '../../utils/teamConfig';
@@ -129,7 +129,7 @@ export function SocialPostModal({ fixtureId, insights, onClose }: SocialPostModa
           {platform === 'linkedin' ? 'Build LinkedIn Prompt' : 'Build Instagram Prompt'}
         </button>
 
-        {insights && getCardData() && (
+        {!!insights && getCardData() && (
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-gray-400">{cardLabels[cardIndex]} ({cardIndex + 1}/3)</span>
