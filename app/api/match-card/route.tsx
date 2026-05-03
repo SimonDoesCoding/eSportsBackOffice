@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+﻿import { NextRequest } from 'next/server';
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '0 0 24px' }}>
-          <img src={`${origin}/sitech-logo.png`} height="60" alt="" style={{ objectFit: 'contain' }} />
+          <img src={`${origin}/sitech-logo.png`} height="100" alt="" style={{ objectFit: 'contain' }} />
           <span style={{ color: '#7a7a7a', fontSize: '20px', letterSpacing: '3px', textTransform: 'uppercase', fontWeight: 700 }}>Sitech eSports</span>
         </div>
 
