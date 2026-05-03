@@ -1,4 +1,6 @@
-'use client';
+﻿'use client';
+
+import { useState } from 'react';
 
 import { useTeams } from '../hooks/useTeams';
 import { useFixtures } from '../hooks/useFixtures';
@@ -28,11 +30,27 @@ export default function Dashboard() {
   const upcomingFixtures = fixturesData || [];
   const recentResults: never[] = []; // Results API not implemented yet - empty array
 
+  const [scraperStatus, setScraperStatus] = useState<Record<string, string>>({});
+  const runScraper = async (endpoint: string) => {
+    setScraperStatus(prev => ({ ...prev, [endpoint]: "running" }));
+    try {
+      const res = await fetch("/api/scraper/" + endpoint, { method: "POST" });
+      const data = await res.json();
+      setScraperStatus(prev => ({ ...prev, [endpoint]: data.success ? "done" : "error" }));
+    } catch {
+      setScraperStatus(prev => ({ ...prev, [endpoint]: "error" }));
+    }
+    setTimeout(() => setScraperStatus(prev => ({ ...prev, [endpoint]: "" })), 3000);
+  };
+
   // Calculate overall team stats from game mode win percentages
   const getOverallWinRate = (team: Team) => {
     const rates = team.gameModeWinPercents;
+
+
     return (rates.Hardpoint + rates.SearchAndDestroy + rates.Overload) / 3;
   };
+
 
   return (
     <div className="px-4 py-6 sm:px-0">
@@ -115,6 +133,20 @@ export default function Dashboard() {
               </svg>
               Manage Clients
             </Link>
+          </div>
+        </div>
+
+        {/* Data Management */}
+        <div className="mb-8 bg-gray-800 rounded-lg p-6">
+          <h3 className="text-xl font-semibold text-white mb-4">Data Management</h3>
+          <p className="text-gray-400 text-sm mb-4">Sync data from BreakingPoint.gg</p>
+          <div className="flex flex-wrap gap-3">
+            {[{key: "player-stats", label: "Refresh Player Stats"}, {key: "team-stats", label: "Refresh Team Stats"}, {key: "completed", label: "Scrape Results"}, {key: "upcoming", label: "Scrape Upcoming"}, {key: "all", label: "Run All"}].map(({key, label}) => (
+              <button key={key} onClick={() => runScraper(key)} disabled={scraperStatus[key] === "running"}
+                className={"px-4 py-2 text-sm rounded-lg font-medium transition-all " + (scraperStatus[key] === "running" ? "bg-yellow-600 text-white" : scraperStatus[key] === "done" ? "bg-green-600 text-white" : scraperStatus[key] === "error" ? "bg-red-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600")}>
+                {scraperStatus[key] === "running" ? "Running..." : scraperStatus[key] === "done" ? "Done!" : scraperStatus[key] === "error" ? "Error" : label}
+              </button>
+            ))}
           </div>
         </div>
 
