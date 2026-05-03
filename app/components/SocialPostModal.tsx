@@ -41,6 +41,9 @@ export function SocialPostModal({ fixtureId, insights, onClose }: SocialPostModa
       topscoreprob: (Math.round(topScore[1] * 1000) / 10).toString(),
       avgmaps: (series.avg_total_maps as number).toFixed(1),
       maps: mapProbs,
+      t1color: getTeamConfig(team1.name).color,
+      t2color: getTeamConfig(team2.name).color,
+      distance: (Math.round((series.distance_probability as number) * 100)).toString(),
     });
     return `/api/match-card?${params.toString()}`;
   };
@@ -61,9 +64,9 @@ export function SocialPostModal({ fixtureId, insights, onClose }: SocialPostModa
     const data2 = insights as Record<string, unknown>;
     const series = data2.series as Record<string, unknown>;
     const team1 = data2.team1 as Record<string, string>;
-    const team1 = data2.team1 as Record<string, string>;
     const team2 = data2.team2 as Record<string, string>;
     const maps = data2.maps as Record<string, unknown>[];
+    const headlines = data2.headline_insights as string[];
     const scoreDist = series.score_distribution as Record<string, number>;
     const topScore = Object.entries(scoreDist).sort((a, b) => b[1] - a[1])[0];
 

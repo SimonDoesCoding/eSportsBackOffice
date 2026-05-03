@@ -1,4 +1,4 @@
-﻿import { NextRequest } from 'next/server';
+import { NextRequest } from 'next/server';
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
@@ -10,117 +10,70 @@ export async function GET(request: NextRequest) {
   const team2Name = searchParams.get('team2') || 'Team 2';
   const team1Prob = searchParams.get('t1prob') || '50';
   const team2Prob = searchParams.get('t2prob') || '50';
-  const team1Kd = searchParams.get('t1kd') || '1.00';
-  const team2Kd = searchParams.get('t2kd') || '1.00';
   const team1Logo = searchParams.get('t1logo') || '';
   const team2Logo = searchParams.get('t2logo') || '';
   const topScore = searchParams.get('topscore') || '3-1';
   const topScoreProb = searchParams.get('topscoreprob') || '25';
-  const avgMaps = searchParams.get('avgmaps') || '4.0';
   const favourite = searchParams.get('favourite') || team1Name;
-  const mapProbs = (searchParams.get('maps') || '').split(',').map(Number);
-  const mapModes = ['HP', 'S&D', 'OVL', 'HP', 'S&D'];
+  const distance = searchParams.get('distance') || '35';
+  const t1color = searchParams.get('t1color') || '#6ee7b7';
+  const t2color = searchParams.get('t2color') || '#f87171';
 
   const t1Pct = parseFloat(team1Prob);
   const t2Pct = parseFloat(team2Prob);
+  const favProb = Math.max(t1Pct, t2Pct);
 
   return new ImageResponse(
     (
-      <div
-        style={{
-          width: '1200px',
-          height: '700px',
-          display: 'flex',
-          flexDirection: 'column',
-          backgroundColor: '#3c3c3c',
-          fontFamily: 'sans-serif',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Background accent */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #6ee7b7, #f87171, #6ee7b7)', display: 'flex' }} />
+      <div style={{ width: '1080px', height: '1080px', display: 'flex', flexDirection: 'column', backgroundColor: '#3c3c3c', fontFamily: 'sans-serif', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '6px', background: 'linear-gradient(90deg, #6ee7b7, #E8655A, #6ee7b7)', display: 'flex' }} />
 
-        {/* Header - Sitech branding centered */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 40px 0' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`${origin}/sitech-logo.png`} height="120" alt="" style={{ objectFit: 'contain' }} />
-            <span style={{ color: 'white', fontSize: '24px', fontWeight: 'bold', letterSpacing: '3px', textTransform: 'uppercase', marginTop: '8px' }}>Sitech eSports</span>
-          </div>
-          <span style={{ color: '#6ee7b7', fontSize: '13px', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '6px' }}>Simulation-Powered Match Preview</span>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '50px 40px 0' }}>
+          <span style={{ color: 'white', fontSize: '52px', fontWeight: 900, textTransform: 'uppercase', textAlign: 'center', letterSpacing: '4px' }}>{team1Name}</span>
+          <span style={{ color: '#E8655A', fontSize: '28px', fontWeight: 900, margin: '6px 0', letterSpacing: '6px' }}>VS</span>
+          <span style={{ color: 'white', fontSize: '52px', fontWeight: 900, textTransform: 'uppercase', textAlign: 'center', letterSpacing: '4px' }}>{team2Name}</span>
         </div>
 
-        {/* Main matchup */}
-        <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', gap: '40px', padding: '0 40px' }}>
-          {/* Team 1 */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '350px' }}>
-            {team1Logo && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={team1Logo} width="100" height="100" alt="" style={{ marginBottom: '16px' }} />
-            )}
-            <span style={{ color: 'white', fontSize: '28px', fontWeight: 'bold', textAlign: 'center', marginBottom: '8px' }}>{team1Name}</span>
-            <span style={{ color: t1Pct >= t2Pct ? '#6ee7b7' : '#f87171', fontSize: '48px', fontWeight: 'bold' }}>{team1Prob}%</span>
-            <span style={{ color: '#9ca3af', fontSize: '18px', marginTop: '4px' }}>K/D: {team1Kd}</span>
+        <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', gap: '16px', padding: '20px 60px' }}>
+          <div style={{ width: '320px', height: '320px', backgroundColor: t1color, borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {team1Logo ? <img src={team1Logo} width="220" height="220" alt="" /> : <span style={{ fontSize: '120px', fontWeight: 'bold', color: 'white' }}>{team1Name.charAt(0)}</span>}
           </div>
 
-          {/* VS */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <span style={{ color: '#4b5563', fontSize: '48px', fontWeight: 'bold' }}>VS</span>
+          <div style={{ width: '70px', height: '70px', backgroundColor: '#3c3c3c', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '4px solid #555' }}>
+            <span style={{ color: 'white', fontSize: '22px', fontWeight: 900, letterSpacing: '2px' }}>VS</span>
           </div>
 
-          {/* Team 2 */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '350px' }}>
-            {team2Logo && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={team2Logo} width="100" height="100" alt="" style={{ marginBottom: '16px' }} />
-            )}
-            <span style={{ color: 'white', fontSize: '28px', fontWeight: 'bold', textAlign: 'center', marginBottom: '8px' }}>{team2Name}</span>
-            <span style={{ color: t2Pct >= t1Pct ? '#6ee7b7' : '#f87171', fontSize: '48px', fontWeight: 'bold' }}>{team2Prob}%</span>
-            <span style={{ color: '#9ca3af', fontSize: '18px', marginTop: '4px' }}>K/D: {team2Kd}</span>
+          <div style={{ width: '320px', height: '320px', backgroundColor: t2color, borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {team2Logo ? <img src={team2Logo} width="220" height="220" alt="" /> : <span style={{ fontSize: '120px', fontWeight: 'bold', color: 'white' }}>{team2Name.charAt(0)}</span>}
           </div>
         </div>
 
-        {/* Map Win Probability Bars */}
-        {mapProbs.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '0 60px 12px' }}>
-            <span style={{ color: '#9ca3af', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center', marginBottom: '2px' }}>Map Win Probability</span>
-            {mapProbs.map((t1p, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ color: '#9ca3af', fontSize: '12px', width: '36px', textAlign: 'right' }}>{mapModes[i] || `M${i+1}`}</span>
-                <div style={{ display: 'flex', flex: 1, height: '16px', borderRadius: '4px', overflow: 'hidden', backgroundColor: '#374151' }}>
-                  <div style={{ width: `${t1p}%`, backgroundColor: t1p >= 50 ? '#6ee7b7' : '#4b5563', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {t1p >= 50 && <span style={{ fontSize: '10px', color: '#1a1a2e', fontWeight: 'bold' }}>{t1p}%</span>}
-                  </div>
-                  <div style={{ width: `${100 - t1p}%`, backgroundColor: t1p < 50 ? '#f87171' : '#4b5563', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {t1p < 50 && <span style={{ fontSize: '10px', color: '#1a1a2e', fontWeight: 'bold' }}>{100 - t1p}%</span>}
-                  </div>
-                </div>
-              </div>
-            ))}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', padding: '0 50px 24px' }}>
+          <div style={{ flex: 1, backgroundColor: '#2a2a2a', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <span style={{ fontSize: '16px', color: '#9ca3af', letterSpacing: '1px' }}>🔥 MOST LIKELY</span>
+            <span style={{ fontSize: '40px', fontWeight: 900, color: 'white', margin: '4px 0' }}>{topScore}</span>
+            <span style={{ fontSize: '18px', color: '#9ca3af' }}>({topScoreProb}%)</span>
           </div>
-        )}
-
-        {/* Bottom stats bar */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '60px', padding: '0 40px 32px', borderTop: '1px solid #374151' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '16px' }}>
-            <span style={{ color: '#9ca3af', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Favourite</span>
-            <span style={{ color: '#6ee7b7', fontSize: '18px', fontWeight: 'bold' }}>{favourite}</span>
+          <div style={{ flex: 1, backgroundColor: '#2a2a2a', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <span style={{ fontSize: '16px', color: '#9ca3af', letterSpacing: '1px' }}>{favourite}</span>
+            <span style={{ fontSize: '40px', fontWeight: 900, color: '#6ee7b7', margin: '4px 0' }}>{favProb}%</span>
+            <span style={{ fontSize: '18px', color: '#9ca3af' }}>FAVOURITE</span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '16px' }}>
-            <span style={{ color: '#9ca3af', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Most Likely Score</span>
-            <span style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>{topScore} ({topScoreProb}%)</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '16px' }}>
-            <span style={{ color: '#9ca3af', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Avg Maps</span>
-            <span style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>{avgMaps}</span>
+          <div style={{ flex: 1, backgroundColor: '#2a2a2a', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <span style={{ fontSize: '16px', color: '#9ca3af', letterSpacing: '1px' }}>🎯 GAME 5</span>
+            <span style={{ fontSize: '40px', fontWeight: 900, color: 'white', margin: '4px 0' }}>{distance}%</span>
+            <span style={{ fontSize: '18px', color: '#9ca3af' }}>CHANCE</span>
           </div>
         </div>
 
-        {/* Footer accent */}
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #6ee7b7, #f87171, #6ee7b7)', display: 'flex' }} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', padding: '0 0 24px' }}>
+          <img src={`${origin}/sitech-logo.png`} height="60" alt="" style={{ objectFit: 'contain' }} />
+          <span style={{ color: '#7a7a7a', fontSize: '20px', letterSpacing: '3px', textTransform: 'uppercase', fontWeight: 700 }}>Sitech eSports</span>
+        </div>
+
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '6px', background: 'linear-gradient(90deg, #6ee7b7, #E8655A, #6ee7b7)', display: 'flex' }} />
       </div>
     ),
-    { width: 1200, height: 700 }
+    { width: 1080, height: 1080 }
   );
 }
