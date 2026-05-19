@@ -1,39 +1,49 @@
 'use client';
 
-import { useFixtures } from '../../hooks/useFixtures';
-import { Fixture } from '../../types';
+import { useState, useEffect } from 'react';
 import { getTeamConfig } from '../../utils/teamConfig';
-import Link from 'next/link';
 import Image from 'next/image';
 
+interface MapResult {
+  map_index: number;
+  game_mode: string;
+  map_name: string;
+  team1_score: number;
+  team2_score: number;
+  winner_id: string;
+}
+
+interface MatchResult {
+  id: string;
+  fixture_id: string;
+  team1_name: string;
+  team2_name: string;
+  team1_id: string;
+  team2_id: string;
+  winner_id: string;
+  team1_score: number;
+  team2_score: number;
+  start_date: string;
+  maps: MapResult[];
+}
+
 export default function ResultsPage() {
-  const { data: fixtures, isLoading, error } = useFixtures();
+  const [results, setResults] = useState<MatchResult[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
-  const fixturesData = fixtures as Fixture[] | undefined;
+  useEffect(() => {
+    fetch('/api/results')
+      .then(r => r.json())
+      .then(data => { setResults(Array.isArray(data) ? data : []); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
 
-  // Filter fixtures that have results
-  const fixturesWithResults = fixturesData?.filter(f => f.result) || [];
-
-  // Sort by most recent first
-  const sortedResults = [...fixturesWithResults].sort((a, b) => 
-    new Date(b.startDateTime).getTime() - new Date(a.startDateTime).getTime()
-  );
-
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="px-4 py-6 sm:px-0">
         <div className="flex items-center justify-center h-64">
           <div className="text-white">Loading results...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="px-4 py-6 sm:px-0">
-        <div className="bg-red-900 border border-red-700 rounded-md p-4">
-          <p className="text-red-300">Error loading results: {error.message}</p>
         </div>
       </div>
     );
@@ -45,124 +55,93 @@ export default function ResultsPage() {
         <div className="sm:flex-auto">
           <h1 className="text-2xl font-semibold text-white">Match Results</h1>
           <p className="mt-2 text-sm text-gray-400">
-            View completed match results and scores
+            Completed matches from the CDL season ({results.length} results)
           </p>
         </div>
       </div>
-      
-      <div className="mt-8">
-        {sortedResults.length === 0 ? (
-          <div className="bg-gray-800 shadow rounded-lg">
-            <div className="px-4 py-5 sm:p-6">
-              <div className="text-center py-12">
-                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                </svg>
-                <h3 className="mt-2 text-sm font-medium text-gray-300">No results yet</h3>
-                <p className="mt-1 text-sm text-gray-400">Results will appear here once matches are completed.</p>
-                <div className="mt-6">
-                  <Link
-                    href="/fixtures"
-                    className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
-                  >
-                    Go to Fixtures
-                  </Link>
-                </div>
-              </div>
-            </div>
+
+      <div className="mt-8 space-y-3">
+        {results.length === 0 ? (
+          <div className="bg-gray-800 rounded-lg p-12 text-center">
+            <p className="text-gray-400">No results found. Run the scraper to import completed matches.</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {sortedResults.map((fixture) => {
-              const result = fixture.result!;
-              const team1Won = result.team1Score > result.team2Score;
-              const team2Won = result.team2Score > result.team1Score;
-              
-              return (
-                <div key={fixture.id} className="bg-gray-800 overflow-hidden shadow rounded-lg">
-                  <div className="p-6">
-                    <div className="flex items-center justify-between">
-                      {/* Team 1 */}
-                      <div className="flex-1 text-center">
-                        <div className="flex items-center justify-center mb-2">
-                          {(() => { const tc = getTeamConfig(fixture.team1.name); return tc.logo ? (
-                            <Image src={tc.logo} alt={fixture.team1.name} width={40} height={40} className="mr-3" />
-                          ) : (
-                            <div className="h-10 w-10 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: tc.color }}>
-                              <span className="text-sm font-bold text-white">{fixture.team1.name.charAt(0).toUpperCase()}</span>
-                            </div>
-                          ); })()}
-                          <h3 className={`text-xl font-medium ${team1Won ? 'text-green-400' : 'text-white'}`}>
-                            {fixture.team1.name}
-                          </h3>
-                        </div>
-                      </div>
+          results.map((r) => {
+            const team1Won = r.winner_id === r.team1_id;
+            const team2Won = r.winner_id === r.team2_id;
+            const t1Config = getTeamConfig(r.team1_name);
+            const t2Config = getTeamConfig(r.team2_name);
+            const isExpanded = expanded === r.id;
 
-                      {/* Score */}
-                      <div className="px-8 text-center">
-                        <div className="flex items-center space-x-4">
-                          <div className={`text-4xl font-bold ${team1Won ? 'text-green-400' : 'text-gray-400'}`}>
-                            {result.team1Score}
-                          </div>
-                          <div className="text-2xl text-gray-500">-</div>
-                          <div className={`text-4xl font-bold ${team2Won ? 'text-green-400' : 'text-gray-400'}`}>
-                            {result.team2Score}
-                          </div>
+            return (
+              <div key={r.id} className="bg-gray-800 rounded-lg overflow-hidden">
+                <div
+                  className="p-5 cursor-pointer hover:bg-gray-750 transition-colors"
+                  onClick={() => setExpanded(isExpanded ? null : r.id)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1 flex items-center justify-end gap-3">
+                      <span className={"text-lg font-semibold " + (team1Won ? "text-green-400" : "text-white")}>{r.team1_name}</span>
+                      {t1Config.logo ? (
+                        <Image src={t1Config.logo} alt={r.team1_name} width={36} height={36} />
+                      ) : (
+                        <div className="h-9 w-9 rounded-full flex items-center justify-center" style={{ backgroundColor: t1Config.color }}>
+                          <span className="text-xs font-bold text-white">{r.team1_name.charAt(0)}</span>
                         </div>
-                        <p className="text-xs text-gray-500 mt-2">BO{fixture.seriesLength}</p>
-                      </div>
-
-                      {/* Team 2 */}
-                      <div className="flex-1 text-center">
-                        <div className="flex items-center justify-center mb-2">
-                          <h3 className={`text-xl font-medium ${team2Won ? 'text-green-400' : 'text-white'}`}>
-                            {fixture.team2.name}
-                          </h3>
-                          {(() => { const tc = getTeamConfig(fixture.team2.name); return tc.logo ? (
-                            <Image src={tc.logo} alt={fixture.team2.name} width={40} height={40} className="ml-3" />
-                          ) : (
-                            <div className="h-10 w-10 rounded-full flex items-center justify-center ml-3" style={{ backgroundColor: tc.color }}>
-                              <span className="text-sm font-bold text-white">{fixture.team2.name.charAt(0).toUpperCase()}</span>
-                            </div>
-                          ); })()}
-                        </div>
-                      </div>
+                      )}
                     </div>
 
-                    {/* Match Details */}
-                    <div className="mt-4 pt-4 border-t border-gray-700">
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center space-x-2">
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            {fixture.league.game.name}
-                          </span>
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            {fixture.fixtureType.name}
-                          </span>
-                          <span className="text-gray-400">{fixture.league.name}</span>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-gray-400">
-                            {new Date(fixture.startDateTime).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric'
-                            })}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            Completed: {new Date(result.completedAt).toLocaleTimeString('en-US', {
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </p>
-                        </div>
+                    <div className="px-6 text-center min-w-[140px]">
+                      <div className="flex items-center justify-center gap-3">
+                        <span className={"text-3xl font-bold " + (team1Won ? "text-green-400" : "text-gray-500")}>{r.team1_score}</span>
+                        <span className="text-xl text-gray-600">-</span>
+                        <span className={"text-3xl font-bold " + (team2Won ? "text-green-400" : "text-gray-500")}>{r.team2_score}</span>
                       </div>
+                      <p className="text-xs text-gray-500 mt-1">{new Date(r.start_date).toLocaleDateString()}</p>
                     </div>
+
+                    <div className="flex-1 flex items-center gap-3">
+                      {t2Config.logo ? (
+                        <Image src={t2Config.logo} alt={r.team2_name} width={36} height={36} />
+                      ) : (
+                        <div className="h-9 w-9 rounded-full flex items-center justify-center" style={{ backgroundColor: t2Config.color }}>
+                          <span className="text-xs font-bold text-white">{r.team2_name.charAt(0)}</span>
+                        </div>
+                      )}
+                      <span className={"text-lg font-semibold " + (team2Won ? "text-green-400" : "text-white")}>{r.team2_name}</span>
+                    </div>
+
+                    <svg className={"w-5 h-5 text-gray-400 ml-4 transition-transform " + (isExpanded ? "rotate-180" : "")} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
                   </div>
                 </div>
-              );
-            })}
-          </div>
+
+                {isExpanded && r.maps.length > 0 && (
+                  <div className="border-t border-gray-700 px-5 py-4">
+                    <div className="space-y-2">
+                      {r.maps.map((m, i) => {
+                        const t1MapWon = m.winner_id === r.team1_id;
+                        const t2MapWon = m.winner_id === r.team2_id;
+                        return (
+                          <div key={i} className="flex items-center justify-between bg-gray-900 rounded-lg px-4 py-3">
+                            <span className="text-sm text-gray-400 w-24">Map {m.map_index}</span>
+                            <span className="text-sm text-gray-400 w-32 text-center">{m.game_mode}</span>
+                            <span className="text-sm text-gray-500 w-28 text-center">{m.map_name}</span>
+                            <div className="flex items-center gap-3 w-24 justify-center">
+                              <span className={"text-lg font-bold " + (t1MapWon ? "text-green-400" : "text-gray-500")}>{m.team1_score}</span>
+                              <span className="text-gray-600">-</span>
+                              <span className={"text-lg font-bold " + (t2MapWon ? "text-green-400" : "text-gray-500")}>{m.team2_score}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })
         )}
       </div>
     </div>

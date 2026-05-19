@@ -32,7 +32,7 @@ const TEAM_CONFIG: Record<string, TeamConfig> = {
     logo: 'https://images.blz-contentstack.com/v3/assets/blta7b34f1f894a2422/blt8f87f7107e1658cc/6732a3d2ac6f71ab1c541288/ROKKR_ICON_MAIN_Red_(1).svg?auto=webp',
   },
   'Los Angeles Thieves': {
-    color: 'rgb(237, 34, 36)',
+    color: 'rgb(255, 255, 255)',
     logo: 'https://images.blz-contentstack.com/v3/assets/blta7b34f1f894a2422/blt4ae7c1816b4ffc52/5fa5a10ea9e913483b74d191/cdl_la_thieves_primary_logo_padding.svg?auto=webp',
   },
   'Miami': {
