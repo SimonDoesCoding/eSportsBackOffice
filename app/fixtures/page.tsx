@@ -1,27 +1,34 @@
-﻿'use client';
+﻿"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useFixtures } from '../../hooks/useFixtures';
-import { useRunSimulation } from '../../hooks/useSimulations';
-import { ResultForm } from '../components/ResultForm';
-import { FixtureScheduleForm } from '../components/FixtureScheduleForm';
-import { FixtureComparisonModal } from '../components/FixtureComparisonModal';
-import { Fixture, Result } from '../../types';
-import { getTeamConfig } from '../../utils/teamConfig';
-import Image from 'next/image';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useUpcomingFixtures } from "../../hooks/useFixtures";
+import { useRunSimulation } from "../../hooks/useSimulations";
+import { ResultForm } from "../components/ResultForm";
+import { FixtureScheduleForm } from "../components/FixtureScheduleForm";
+import { FixtureComparisonModal } from "../components/FixtureComparisonModal";
+import { Fixture, Result } from "../../types";
+import { getTeamConfig } from "../../utils/teamConfig";
+import Image from "next/image";
 
 export default function FixturesPage() {
-  const { data: fixtures, isLoading, error, refetch } = useFixtures();
+  const { data: fixtures, isLoading, error, refetch } = useUpcomingFixtures();
   const runSimulation = useRunSimulation();
   const router = useRouter();
   const [resultFormOpen, setResultFormOpen] = useState(false);
   const [scheduleFormOpen, setScheduleFormOpen] = useState(false);
   const [selectedFixture, setSelectedFixture] = useState<Fixture | null>(null);
-  const [editingResult, setEditingResult] = useState<Result | undefined>(undefined);
+  const [editingResult, setEditingResult] = useState<Result | undefined>(
+    undefined,
+  );
   const [isRunningAll, setIsRunningAll] = useState(false);
-  const [allSimProgress, setAllSimProgress] = useState({ current: 0, total: 0 });
-  const [comparisonFixture, setComparisonFixture] = useState<Fixture | null>(null);
+  const [allSimProgress, setAllSimProgress] = useState({
+    current: 0,
+    total: 0,
+  });
+  const [comparisonFixture, setComparisonFixture] = useState<Fixture | null>(
+    null,
+  );
 
   // Type-safe helper
   const fixturesData = fixtures as Fixture[] | undefined;
@@ -33,7 +40,7 @@ export default function FixturesPage() {
 
   const handleScheduleSuccess = () => {
     refetch(); // Refresh fixtures list
-    alert('Fixture scheduled successfully!');
+    alert("Fixture scheduled successfully!");
   };
 
   const handleEnterResult = (fixture: Fixture) => {
@@ -70,26 +77,26 @@ export default function FixturesPage() {
         const sim = result.simulation;
         alert(
           `Simulation Complete!\n\n` +
-          `${fixture.team1.name} vs ${fixture.team2.name}\n` +
-          `Predicted Score: ${sim.team1Score} - ${sim.team2Score}\n` +
-          `Predicted Winner: ${sim.predictedWinner}\n` +
-          `Confidence: ${(sim.confidence * 100).toFixed(1)}%\n\n` +
-          `Simulation completed successfully`
+            `${fixture.team1.name} vs ${fixture.team2.name}\n` +
+            `Predicted Score: ${sim.team1Score} - ${sim.team2Score}\n` +
+            `Predicted Winner: ${sim.predictedWinner}\n` +
+            `Confidence: ${(sim.confidence * 100).toFixed(1)}%\n\n` +
+            `Simulation completed successfully`,
         );
       }
     } catch (error) {
-      console.error('Simulation error:', error);
+      console.error("Simulation error:", error);
       alert(
         `Simulation Failed\n\n` +
-        `Unable to run simulation for ${fixture.team1.name} vs ${fixture.team2.name}.\n\n` +
-        `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+          `Unable to run simulation for ${fixture.team1.name} vs ${fixture.team2.name}.\n\n` +
+          `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   };
 
   const handleRunAllSimulations = async () => {
     if (!fixturesData) return;
-    
+
     // Get next Friday-Sunday window
     const now = new Date();
     const dayOfWeek = now.getDay();
@@ -100,16 +107,21 @@ export default function FixturesPage() {
     const monday = new Date(friday);
     monday.setDate(friday.getDate() + 3);
     monday.setHours(6, 0, 0, 0); // Extend to Mon 06:00 to cover late US Sunday matches
-    const upcomingFixtures = fixturesData.filter(f => {
+    const upcomingFixtures = fixturesData.filter((f) => {
       const d = new Date(f.startDateTime);
       return d >= friday && d < monday;
     });
     if (upcomingFixtures.length === 0) {
-      alert('No fixtures found for the upcoming weekend (Fri-Sun).');
+      alert("No fixtures found for the upcoming weekend (Fri-Sun).");
       return;
     }
 
-    if (!confirm(`Run simulations for ${upcomingFixtures.length} weekend fixture(s)?`)) return;
+    if (
+      !confirm(
+        `Run simulations for ${upcomingFixtures.length} weekend fixture(s)?`,
+      )
+    )
+      return;
 
     setIsRunningAll(true);
     setAllSimProgress({ current: 0, total: upcomingFixtures.length });
@@ -126,11 +138,15 @@ export default function FixturesPage() {
         const result = await runSimulation.mutateAsync(fixture.id);
         if (result.success) {
           const sim = result.simulation;
-          results.push(`? ${fixture.team1.name} vs ${fixture.team2.name}: ${sim.team1Score}-${sim.team2Score} (${sim.predictedWinner})`);
+          results.push(
+            `? ${fixture.team1.name} vs ${fixture.team2.name}: ${sim.team1Score}-${sim.team2Score} (${sim.predictedWinner})`,
+          );
           succeeded++;
         }
       } catch {
-        results.push(`? ${fixture.team1.name} vs ${fixture.team2.name}: Failed`);
+        results.push(
+          `? ${fixture.team1.name} vs ${fixture.team2.name}: Failed`,
+        );
         failed++;
       }
     }
@@ -138,8 +154,8 @@ export default function FixturesPage() {
     setIsRunningAll(false);
     alert(
       `All Simulations Complete\n\n` +
-      `Succeeded: ${succeeded} | Failed: ${failed}\n\n` +
-      results.join('\n')
+        `Succeeded: ${succeeded} | Failed: ${failed}\n\n` +
+        results.join("\n"),
     );
   };
 
@@ -179,11 +195,17 @@ export default function FixturesPage() {
         <div className="sm:flex-auto">
           <h1 className="text-2xl font-semibold text-white">Fixtures</h1>
           <p className="mt-2 text-sm text-gray-400">
-            Schedule and manage matches for {fixturesData && fixturesData.length > 0 ? fixturesData[0].league.name : 'CDL'}. Showing upcoming fixtures only. Past fixtures are on the Results page.
+            Schedule and manage matches for{" "}
+            {fixturesData && fixturesData.length > 0
+              ? fixturesData[0].league.name
+              : "CDL"}
+            . Showing upcoming fixtures only. Past fixtures are on the Results
+            page.
           </p>
           {fixturesData && fixturesData.length > 0 && (
             <p className="mt-1 text-xs text-gray-500">
-              Showing fixtures for {fixturesData[0].league.name} ({fixturesData[0].league.game.name})
+              Showing fixtures for {fixturesData[0].league.name} (
+              {fixturesData[0].league.game.name})
             </p>
           )}
         </div>
@@ -196,14 +218,29 @@ export default function FixturesPage() {
           >
             {isRunningAll ? (
               <>
-                <svg className="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="animate-spin w-4 h-4 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
                 Simulating {allSimProgress.current}/{allSimProgress.total}...
               </>
             ) : (
-              'Simulate Weekend Fixtures'
+              "Simulate Weekend Fixtures"
             )}
           </button>
           <button
@@ -215,190 +252,353 @@ export default function FixturesPage() {
           </button>
         </div>
       </div>
-      
+
       <div className="mt-8">
         {fixturesData && fixturesData.length > 0 ? (
           <div className="space-y-6">
             {fixturesData
-              .filter(f => !isFixtureInPast(f.startDateTime))
-              .sort((a, b) => new Date(a.startDateTime).getTime() - new Date(b.startDateTime).getTime())
+              .filter((f) => !isFixtureInPast(f.startDateTime))
+              .sort(
+                (a, b) =>
+                  new Date(a.startDateTime).getTime() -
+                  new Date(b.startDateTime).getTime(),
+              )
               .map((fixture) => (
-              <div key={fixture.id} className="bg-gray-800 overflow-hidden shadow rounded-lg cursor-pointer hover:bg-gray-750 hover:ring-1 hover:ring-gray-600 transition-all" onClick={() => router.push(`/fixtures/${fixture.id}`)}>
-                <div className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-6">
-                      <div className="text-center">
-                        <div className="flex items-center mb-2">
-                          {(() => { const tc = getTeamConfig(fixture.team1.name); return tc.logo ? (
-                            <Image src={tc.logo} alt={fixture.team1.name} width={32} height={32} className="mr-3" />
-                          ) : (
-                            <div className="h-8 w-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: tc.color }}>
-                              <span className="text-xs font-bold text-white">{fixture.team1.name.charAt(0).toUpperCase()}</span>
+                <div
+                  key={fixture.id}
+                  className="bg-gray-800 overflow-hidden shadow rounded-lg cursor-pointer hover:bg-gray-750 hover:ring-1 hover:ring-gray-600 transition-all"
+                  onClick={() => router.push(`/fixtures/${fixture.id}`)}
+                >
+                  <div className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-6">
+                        <div className="text-center">
+                          <div className="flex items-center mb-2">
+                            {(() => {
+                              const tc = getTeamConfig(fixture.team1.name);
+                              return tc.logo ? (
+                                <Image
+                                  src={tc.logo}
+                                  alt={fixture.team1.name}
+                                  width={32}
+                                  height={32}
+                                  className="mr-3"
+                                />
+                              ) : (
+                                <div
+                                  className="h-8 w-8 rounded-full flex items-center justify-center mr-3"
+                                  style={{ backgroundColor: tc.color }}
+                                >
+                                  <span className="text-xs font-bold text-white">
+                                    {fixture.team1.name.charAt(0).toUpperCase()}
+                                  </span>
+                                </div>
+                              );
+                            })()}
+                            <h3
+                              className="text-lg font-medium"
+                              style={{
+                                color: getTeamConfig(fixture.team1.name).color,
+                              }}
+                            >
+                              {fixture.team1.name}
+                            </h3>
+                          </div>
+                          <div className="grid grid-cols-3 gap-2 text-xs">
+                            <div className="text-center">
+                              <p className="text-gray-400">HP</p>
+                              <p
+                                className="font-medium"
+                                style={{
+                                  color: getTeamConfig(fixture.team1.name)
+                                    .color,
+                                }}
+                              >
+                                {(
+                                  fixture.team1.gameModeWinPercents.Hardpoint *
+                                  100
+                                ).toFixed(0)}
+                                %
+                              </p>
                             </div>
-                          ); })()}
-                          <h3 className="text-lg font-medium" style={{ color: getTeamConfig(fixture.team1.name).color }}>{fixture.team1.name}</h3>
-                        </div>
-                        <div className="grid grid-cols-3 gap-2 text-xs">
-                          <div className="text-center">
-                            <p className="text-gray-400">HP</p>
-                            <p className="font-medium" style={{ color: getTeamConfig(fixture.team1.name).color }}>
-                              {(fixture.team1.gameModeWinPercents.Hardpoint * 100).toFixed(0)}%
-                            </p>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-gray-400">SND</p>
-                            <p className="font-medium" style={{ color: getTeamConfig(fixture.team1.name).color }}>
-                              {(fixture.team1.gameModeWinPercents.SearchAndDestroy * 100).toFixed(0)}%
-                            </p>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-gray-400">OL</p>
-                            <p className="font-medium" style={{ color: getTeamConfig(fixture.team1.name).color }}>
-                              {(fixture.team1.gameModeWinPercents.Overload * 100).toFixed(0)}%
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="text-center">
-                        <span className="text-2xl font-bold text-gray-400">VS</span>
-                        <p className="text-xs text-gray-500 mt-1">BO{fixture.seriesLength}</p>
-                        {hasResult(fixture) && (
-                          <div className="mt-2 text-sm font-bold">
-                            <span className={fixture.result!.team1Score > fixture.result!.team2Score ? 'text-green-400' : 'text-gray-400'}>
-                              {fixture.result!.team1Score}
-                            </span>
-                            <span className="text-gray-400 mx-1">-</span>
-                            <span className={fixture.result!.team2Score > fixture.result!.team1Score ? 'text-green-400' : 'text-gray-400'}>
-                              {fixture.result!.team2Score}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      
-                      <div className="text-center">
-                        <div className="flex items-center mb-2">
-                          {(() => { const tc = getTeamConfig(fixture.team2.name); return tc.logo ? (
-                            <Image src={tc.logo} alt={fixture.team2.name} width={32} height={32} className="mr-3" />
-                          ) : (
-                            <div className="h-8 w-8 rounded-full flex items-center justify-center mr-3" style={{ backgroundColor: tc.color }}>
-                              <span className="text-xs font-bold text-white">{fixture.team2.name.charAt(0).toUpperCase()}</span>
+                            <div className="text-center">
+                              <p className="text-gray-400">SND</p>
+                              <p
+                                className="font-medium"
+                                style={{
+                                  color: getTeamConfig(fixture.team1.name)
+                                    .color,
+                                }}
+                              >
+                                {(
+                                  fixture.team1.gameModeWinPercents
+                                    .SearchAndDestroy * 100
+                                ).toFixed(0)}
+                                %
+                              </p>
                             </div>
-                          ); })()}
-                          <h3 className="text-lg font-medium" style={{ color: getTeamConfig(fixture.team2.name).color }}>{fixture.team2.name}</h3>
-                        </div>
-                        <div className="grid grid-cols-3 gap-2 text-xs">
-                          <div className="text-center">
-                            <p className="text-gray-400">HP</p>
-                            <p className="font-medium" style={{ color: getTeamConfig(fixture.team2.name).color }}>
-                              {(fixture.team2.gameModeWinPercents.Hardpoint * 100).toFixed(0)}%
-                            </p>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-gray-400">SND</p>
-                            <p className="font-medium" style={{ color: getTeamConfig(fixture.team2.name).color }}>
-                              {(fixture.team2.gameModeWinPercents.SearchAndDestroy * 100).toFixed(0)}%
-                            </p>
-                          </div>
-                          <div className="text-center">
-                            <p className="text-gray-400">OL</p>
-                            <p className="font-medium" style={{ color: getTeamConfig(fixture.team2.name).color }}>
-                              {(fixture.team2.gameModeWinPercents.Overload * 100).toFixed(0)}%
-                            </p>
+                            <div className="text-center">
+                              <p className="text-gray-400">OL</p>
+                              <p
+                                className="font-medium"
+                                style={{
+                                  color: getTeamConfig(fixture.team1.name)
+                                    .color,
+                                }}
+                              >
+                                {(
+                                  fixture.team1.gameModeWinPercents.Overload *
+                                  100
+                                ).toFixed(0)}
+                                %
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                    
-                    <div className="text-right">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {fixture.league.game.name}
-                        </span>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          {fixture.fixtureType.name}
-                        </span>
-                        {isFixtureInPast(fixture.startDateTime) && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            Completed
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-400">
-                        {new Date(fixture.startDateTime).toLocaleDateString()} at{' '}
-                        {new Date(fixture.startDateTime).toLocaleTimeString()}
-                      </p>
-                      <p className="text-sm text-blue-400 mt-1">{fixture.league.name}</p>
-                      
-                      {/* Action Buttons */}
-                      <div className="mt-3 flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
-                        {/* Compare Button */}
-                        <button
-                          onClick={() => setComparisonFixture(fixture)}
-                          className="inline-flex items-center justify-center px-3 py-1 text-xs bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors"
-                        >
-                          Compare Stats
-                        </button>
 
-                        {/* Simulation Button - Only for future fixtures */}
-                        {!isFixtureInPast(fixture.startDateTime) && (
+                        <div className="text-center">
+                          <span className="text-2xl font-bold text-gray-400">
+                            VS
+                          </span>
+                          <p className="text-xs text-gray-500 mt-1">
+                            BO{fixture.seriesLength}
+                          </p>
+                          {hasResult(fixture) && (
+                            <div className="mt-2 text-sm font-bold">
+                              <span
+                                className={
+                                  fixture.result!.team1Score >
+                                  fixture.result!.team2Score
+                                    ? "text-green-400"
+                                    : "text-gray-400"
+                                }
+                              >
+                                {fixture.result!.team1Score}
+                              </span>
+                              <span className="text-gray-400 mx-1">-</span>
+                              <span
+                                className={
+                                  fixture.result!.team2Score >
+                                  fixture.result!.team1Score
+                                    ? "text-green-400"
+                                    : "text-gray-400"
+                                }
+                              >
+                                {fixture.result!.team2Score}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="text-center">
+                          <div className="flex items-center mb-2">
+                            {(() => {
+                              const tc = getTeamConfig(fixture.team2.name);
+                              return tc.logo ? (
+                                <Image
+                                  src={tc.logo}
+                                  alt={fixture.team2.name}
+                                  width={32}
+                                  height={32}
+                                  className="mr-3"
+                                />
+                              ) : (
+                                <div
+                                  className="h-8 w-8 rounded-full flex items-center justify-center mr-3"
+                                  style={{ backgroundColor: tc.color }}
+                                >
+                                  <span className="text-xs font-bold text-white">
+                                    {fixture.team2.name.charAt(0).toUpperCase()}
+                                  </span>
+                                </div>
+                              );
+                            })()}
+                            <h3
+                              className="text-lg font-medium"
+                              style={{
+                                color: getTeamConfig(fixture.team2.name).color,
+                              }}
+                            >
+                              {fixture.team2.name}
+                            </h3>
+                          </div>
+                          <div className="grid grid-cols-3 gap-2 text-xs">
+                            <div className="text-center">
+                              <p className="text-gray-400">HP</p>
+                              <p
+                                className="font-medium"
+                                style={{
+                                  color: getTeamConfig(fixture.team2.name)
+                                    .color,
+                                }}
+                              >
+                                {(
+                                  fixture.team2.gameModeWinPercents.Hardpoint *
+                                  100
+                                ).toFixed(0)}
+                                %
+                              </p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-gray-400">SND</p>
+                              <p
+                                className="font-medium"
+                                style={{
+                                  color: getTeamConfig(fixture.team2.name)
+                                    .color,
+                                }}
+                              >
+                                {(
+                                  fixture.team2.gameModeWinPercents
+                                    .SearchAndDestroy * 100
+                                ).toFixed(0)}
+                                %
+                              </p>
+                            </div>
+                            <div className="text-center">
+                              <p className="text-gray-400">OL</p>
+                              <p
+                                className="font-medium"
+                                style={{
+                                  color: getTeamConfig(fixture.team2.name)
+                                    .color,
+                                }}
+                              >
+                                {(
+                                  fixture.team2.gameModeWinPercents.Overload *
+                                  100
+                                ).toFixed(0)}
+                                %
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {fixture.league.game.name}
+                          </span>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            {fixture.fixtureType.name}
+                          </span>
+                          {isFixtureInPast(fixture.startDateTime) && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                              Completed
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-400">
+                          {new Date(fixture.startDateTime).toLocaleDateString()}{" "}
+                          at{" "}
+                          {new Date(fixture.startDateTime).toLocaleTimeString()}
+                        </p>
+                        <p className="text-sm text-blue-400 mt-1">
+                          {fixture.league.name}
+                        </p>
+
+                        {/* Action Buttons */}
+                        <div
+                          className="mt-3 flex flex-col gap-2"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {/* Compare Button */}
                           <button
-                            onClick={() => handleRunSimulation(fixture)}
-                            disabled={runSimulation.isPending}
-                            className="inline-flex items-center justify-center px-3 py-1 text-xs bg-cyan-600 text-white rounded hover:bg-cyan-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            onClick={() => setComparisonFixture(fixture)}
+                            className="inline-flex items-center justify-center px-3 py-1 text-xs bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors"
                           >
-                            {runSimulation.isPending ? (
-                              <>
-                                <svg className="animate-spin w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24">
-                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Running...
-                              </>
-                            ) : (
-                              <>
-                                <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                </svg>
-                                Run Simulation
-                              </>
-                            )}
+                            Compare Stats
                           </button>
-                        )}
-                        
-                        {/* Result Action Buttons - Only for Past Fixtures */}
-                        {isFixtureInPast(fixture.startDateTime) && (
-                          <>
-                            {hasResult(fixture) ? (
-                              <button
-                                onClick={() => handleViewEditResult(fixture)}
-                                className="inline-flex items-center justify-center px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-                              >
-                                Edit Result
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => handleEnterResult(fixture)}
-                                className="inline-flex items-center justify-center px-3 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
-                              >
-                                Enter Result
-                              </button>
-                            )}
-                          </>
-                        )}
+
+                          {/* Simulation Button - Only for future fixtures */}
+                          {!isFixtureInPast(fixture.startDateTime) && (
+                            <button
+                              onClick={() => handleRunSimulation(fixture)}
+                              disabled={runSimulation.isPending}
+                              className="inline-flex items-center justify-center px-3 py-1 text-xs bg-cyan-600 text-white rounded hover:bg-cyan-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {runSimulation.isPending ? (
+                                <>
+                                  <svg
+                                    className="animate-spin w-3 h-3 mr-1"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <circle
+                                      className="opacity-25"
+                                      cx="12"
+                                      cy="12"
+                                      r="10"
+                                      stroke="currentColor"
+                                      strokeWidth="4"
+                                    ></circle>
+                                    <path
+                                      className="opacity-75"
+                                      fill="currentColor"
+                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    ></path>
+                                  </svg>
+                                  Running...
+                                </>
+                              ) : (
+                                <>
+                                  <svg
+                                    className="w-3 h-3 mr-1"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                                    ></path>
+                                  </svg>
+                                  Run Simulation
+                                </>
+                              )}
+                            </button>
+                          )}
+
+                          {/* Result Action Buttons - Only for Past Fixtures */}
+                          {isFixtureInPast(fixture.startDateTime) && (
+                            <>
+                              {hasResult(fixture) ? (
+                                <button
+                                  onClick={() => handleViewEditResult(fixture)}
+                                  className="inline-flex items-center justify-center px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                                >
+                                  Edit Result
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => handleEnterResult(fixture)}
+                                  className="inline-flex items-center justify-center px-3 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
+                                >
+                                  Enter Result
+                                </button>
+                              )}
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         ) : (
           <div className="bg-gray-800 shadow rounded-lg">
             <div className="px-4 py-5 sm:p-6">
               <div className="text-center py-12">
-                <h3 className="mt-2 text-sm font-medium text-gray-300">No fixtures</h3>
-                <p className="mt-1 text-sm text-gray-400">No upcoming matches found for CDL.</p>
+                <h3 className="mt-2 text-sm font-medium text-gray-300">
+                  No fixtures
+                </h3>
+                <p className="mt-1 text-sm text-gray-400">
+                  No upcoming matches found for CDL.
+                </p>
               </div>
             </div>
           </div>
@@ -407,8 +607,8 @@ export default function FixturesPage() {
 
       {/* Result Form Modal */}
       {selectedFixture && (
-        <ResultForm 
-          isOpen={resultFormOpen} 
+        <ResultForm
+          isOpen={resultFormOpen}
           onClose={handleCloseResultForm}
           fixture={selectedFixture}
         />

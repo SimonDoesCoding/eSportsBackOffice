@@ -93,11 +93,22 @@ export interface Fixture {
 export interface Result {
   id: string;
   fixtureId: string;
+  team1Name: string;
+  team2Name: string;
+  winnerId: string;
   team1Score: number;
   team2Score: number;
-  completedAt: string;
-  createdAt?: string;
-  updatedAt?: string;
+  startDate: string;
+  maps: MapResultDto[];
+}
+
+export interface MapResultDto {
+  mapIndex: number;
+  gameMode: string;
+  mapName: string;
+  team1Score: number;
+  team2Score: number;
+  winnerId: string;
 }
 
 // Detailed Result Submission Types

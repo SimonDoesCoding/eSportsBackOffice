@@ -28,11 +28,11 @@ export async function GET(request: NextRequest) {
           <span style={{ color: 'white', fontSize: '36px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '4px' }}>Key Insights</span>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '80px', marginTop: '16px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              {team1Logo && <img src={team1Logo} width="100" height="100" alt="" />}
+              {team1Logo && <img src={team1Logo} width="100" height="100" alt="" style={{ objectFit: 'contain' }} />}
               <span style={{ color: 'white', fontSize: '20px', fontWeight: 900, marginTop: '8px' }}>{team1Name}</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              {team2Logo && <img src={team2Logo} width="100" height="100" alt="" />}
+              {team2Logo && <img src={team2Logo} width="100" height="100" alt="" style={{ objectFit: 'contain' }} />}
               <span style={{ color: 'white', fontSize: '20px', fontWeight: 900, marginTop: '8px' }}>{team2Name}</span>
             </div>
 

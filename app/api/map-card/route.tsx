@@ -33,12 +33,12 @@ export async function GET(request: NextRequest) {
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: '80px', padding: '10px 60px 30px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            {team1Logo && <img src={team1Logo} width="200" height="200" alt="" />}
+            {team1Logo && <img src={team1Logo} width="200" height="200" alt="" style={{ objectFit: 'contain' }} />}
             <span style={{ color: 'white', fontSize: '24px', fontWeight: 900 }}>{team1Name}</span>
             <span style={{ color: t1Pct >= t2Pct ? '#6ee7b7' : '#f87171', fontSize: '20px', fontWeight: 700, marginTop: '4px' }}>K/D: {t1kd}</span>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            {team2Logo && <img src={team2Logo} width="200" height="200" alt="" />}
+            {team2Logo && <img src={team2Logo} width="200" height="200" alt="" style={{ objectFit: 'contain' }} />}
             <span style={{ color: 'white', fontSize: '24px', fontWeight: 900 }}>{team2Name}</span>
             <span style={{ color: t2Pct >= t1Pct ? '#6ee7b7' : '#f87171', fontSize: '20px', fontWeight: 700, marginTop: '4px' }}>K/D: {t2kd}</span>
           </div>

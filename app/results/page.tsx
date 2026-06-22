@@ -2,39 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { getTeamConfig } from '../../utils/teamConfig';
+import { FixtureService } from '../../Services/FixtureService';
+import { Result } from '../../types';
 import Image from 'next/image';
 
-interface MapResult {
-  map_index: number;
-  game_mode: string;
-  map_name: string;
-  team1_score: number;
-  team2_score: number;
-  winner_id: string;
-}
-
-interface MatchResult {
-  id: string;
-  fixture_id: string;
-  team1_name: string;
-  team2_name: string;
-  team1_id: string;
-  team2_id: string;
-  winner_id: string;
-  team1_score: number;
-  team2_score: number;
-  start_date: string;
-  maps: MapResult[];
-}
-
 export default function ResultsPage() {
-  const [results, setResults] = useState<MatchResult[]>([]);
+  const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/results')
-      .then(r => r.json())
+    FixtureService.getResults()
       .then(data => { setResults(Array.isArray(data) ? data : []); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
@@ -67,10 +45,12 @@ export default function ResultsPage() {
           </div>
         ) : (
           results.map((r) => {
-            const team1Won = r.winner_id === r.team1_id;
-            const team2Won = r.winner_id === r.team2_id;
-            const t1Config = getTeamConfig(r.team1_name);
-            const t2Config = getTeamConfig(r.team2_name);
+            const team1Won = r.winnerId === r.fixtureId; // Need team IDs - use score comparison instead
+            const team2Won = !team1Won;
+            const t1Won = r.team1Score > r.team2Score;
+            const t2Won = r.team2Score > r.team1Score;
+            const t1Config = getTeamConfig(r.team1Name);
+            const t2Config = getTeamConfig(r.team2Name);
             const isExpanded = expanded === r.id;
 
             return (
@@ -81,34 +61,34 @@ export default function ResultsPage() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 flex items-center justify-end gap-3">
-                      <span className={"text-lg font-semibold " + (team1Won ? "text-green-400" : "text-white")}>{r.team1_name}</span>
+                      <span className={"text-lg font-semibold " + (t1Won ? "text-green-400" : "text-white")}>{r.team1Name}</span>
                       {t1Config.logo ? (
-                        <Image src={t1Config.logo} alt={r.team1_name} width={36} height={36} />
+                        <Image src={t1Config.logo} alt={r.team1Name} width={36} height={36} />
                       ) : (
                         <div className="h-9 w-9 rounded-full flex items-center justify-center" style={{ backgroundColor: t1Config.color }}>
-                          <span className="text-xs font-bold text-white">{r.team1_name.charAt(0)}</span>
+                          <span className="text-xs font-bold text-white">{r.team1Name.charAt(0)}</span>
                         </div>
                       )}
                     </div>
 
                     <div className="px-6 text-center min-w-[140px]">
                       <div className="flex items-center justify-center gap-3">
-                        <span className={"text-3xl font-bold " + (team1Won ? "text-green-400" : "text-gray-500")}>{r.team1_score}</span>
+                        <span className={"text-3xl font-bold " + (t1Won ? "text-green-400" : "text-gray-500")}>{r.team1Score}</span>
                         <span className="text-xl text-gray-600">-</span>
-                        <span className={"text-3xl font-bold " + (team2Won ? "text-green-400" : "text-gray-500")}>{r.team2_score}</span>
+                        <span className={"text-3xl font-bold " + (t2Won ? "text-green-400" : "text-gray-500")}>{r.team2Score}</span>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">{new Date(r.start_date).toLocaleDateString()}</p>
+                      <p className="text-xs text-gray-500 mt-1">{new Date(r.startDate).toLocaleDateString()}</p>
                     </div>
 
                     <div className="flex-1 flex items-center gap-3">
                       {t2Config.logo ? (
-                        <Image src={t2Config.logo} alt={r.team2_name} width={36} height={36} />
+                        <Image src={t2Config.logo} alt={r.team2Name} width={36} height={36} />
                       ) : (
                         <div className="h-9 w-9 rounded-full flex items-center justify-center" style={{ backgroundColor: t2Config.color }}>
-                          <span className="text-xs font-bold text-white">{r.team2_name.charAt(0)}</span>
+                          <span className="text-xs font-bold text-white">{r.team2Name.charAt(0)}</span>
                         </div>
                       )}
-                      <span className={"text-lg font-semibold " + (team2Won ? "text-green-400" : "text-white")}>{r.team2_name}</span>
+                      <span className={"text-lg font-semibold " + (t2Won ? "text-green-400" : "text-white")}>{r.team2Name}</span>
                     </div>
 
                     <svg className={"w-5 h-5 text-gray-400 ml-4 transition-transform " + (isExpanded ? "rotate-180" : "")} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,17 +101,17 @@ export default function ResultsPage() {
                   <div className="border-t border-gray-700 px-5 py-4">
                     <div className="space-y-2">
                       {r.maps.map((m, i) => {
-                        const t1MapWon = m.winner_id === r.team1_id;
-                        const t2MapWon = m.winner_id === r.team2_id;
+                        const t1MapWon = m.team1Score > m.team2Score;
+                        const t2MapWon = m.team2Score > m.team1Score;
                         return (
                           <div key={i} className="flex items-center justify-between bg-gray-900 rounded-lg px-4 py-3">
-                            <span className="text-sm text-gray-400 w-24">Map {m.map_index}</span>
-                            <span className="text-sm text-gray-400 w-32 text-center">{m.game_mode}</span>
-                            <span className="text-sm text-gray-500 w-28 text-center">{m.map_name}</span>
+                            <span className="text-sm text-gray-400 w-24">Map {m.mapIndex}</span>
+                            <span className="text-sm text-gray-400 w-32 text-center">{m.gameMode}</span>
+                            <span className="text-sm text-gray-500 w-28 text-center">{m.mapName}</span>
                             <div className="flex items-center gap-3 w-24 justify-center">
-                              <span className={"text-lg font-bold " + (t1MapWon ? "text-green-400" : "text-gray-500")}>{m.team1_score}</span>
+                              <span className={"text-lg font-bold " + (t1MapWon ? "text-green-400" : "text-gray-500")}>{m.team1Score}</span>
                               <span className="text-gray-600">-</span>
-                              <span className={"text-lg font-bold " + (t2MapWon ? "text-green-400" : "text-gray-500")}>{m.team2_score}</span>
+                              <span className={"text-lg font-bold " + (t2MapWon ? "text-green-400" : "text-gray-500")}>{m.team2Score}</span>
                             </div>
                           </div>
                         );

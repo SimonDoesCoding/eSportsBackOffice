@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 
         <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', gap: '16px', padding: '20px 60px' }}>
           <div style={{ width: '320px', height: '320px', backgroundColor: t1color, borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {team1Logo ? <img src={team1Logo} width="220" height="220" alt="" /> : <span style={{ fontSize: '120px', fontWeight: 'bold', color: 'white' }}>{team1Name.charAt(0)}</span>}
+            {team1Logo ? <img src={team1Logo} width="220" height="220" alt="" style={{ objectFit: 'contain' }} /> : <span style={{ fontSize: '120px', fontWeight: 'bold', color: 'white' }}>{team1Name.charAt(0)}</span>}
           </div>
 
           <div style={{ width: '70px', height: '70px', backgroundColor: '#3c3c3c', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '4px solid #555' }}>
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
           </div>
 
           <div style={{ width: '320px', height: '320px', backgroundColor: t2color, borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {team2Logo ? <img src={team2Logo} width="220" height="220" alt="" /> : <span style={{ fontSize: '120px', fontWeight: 'bold', color: 'white' }}>{team2Name.charAt(0)}</span>}
+            {team2Logo ? <img src={team2Logo} width="220" height="220" alt="" style={{ objectFit: 'contain' }} /> : <span style={{ fontSize: '120px', fontWeight: 'bold', color: 'white' }}>{team2Name.charAt(0)}</span>}
           </div>
         </div>
 

@@ -35,6 +35,7 @@ export default function RootLayout({
                     <Link href="/results" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Results</Link>
                     <Link href="/leagues" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Leagues</Link>
                     <Link href="/clients" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Clients</Link>
+                    <Link href="/scraper" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Scraper</Link>
                   </div>
                 </div>
               </div>

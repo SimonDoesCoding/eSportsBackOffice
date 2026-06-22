@@ -1,20 +1,27 @@
-'use client';
+"use client";
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { FixtureService } from '../Services/FixtureService';
-import { LeagueService } from '../Services/LeagueService';
-import { Fixture, FixtureType, League } from '../types/index';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { FixtureService } from "../Services/FixtureService";
+import { LeagueService } from "../Services/LeagueService";
+import { Fixture, FixtureType, League } from "../types/index";
 
 export function useFixtures() {
   return useQuery<Fixture[]>({
-    queryKey: ['fixtures'],
+    queryKey: ["fixtures"],
     queryFn: () => FixtureService.getFixtures(),
+  });
+}
+
+export function useUpcomingFixtures() {
+  return useQuery<Fixture[]>({
+    queryKey: ["upcoming"],
+    queryFn: () => FixtureService.getUpcomingFixtures(),
   });
 }
 
 export function useFixture(id: string) {
   return useQuery<Fixture>({
-    queryKey: ['fixtures', id],
+    queryKey: ["fixtures", id],
     queryFn: () => FixtureService.getFixture(id),
     enabled: !!id,
   });
@@ -22,48 +29,48 @@ export function useFixture(id: string) {
 
 export function useFixtureTypes() {
   return useQuery<FixtureType[]>({
-    queryKey: ['fixtureTypes'],
+    queryKey: ["fixtureTypes"],
     queryFn: () => FixtureService.getFixtureTypes(),
   });
 }
 
 export function useLeagues() {
   return useQuery<League[]>({
-    queryKey: ['leagues'],
+    queryKey: ["leagues"],
     queryFn: () => LeagueService.getLeagues(),
   });
 }
 
 export function useCreateFixture() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: FixtureService.createFixture,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['fixtures'] });
+      queryClient.invalidateQueries({ queryKey: ["fixtures"] });
     },
   });
 }
 
 export function useUpdateFixture() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: ({ id, fixture }: { id: string; fixture: Partial<Fixture> }) =>
       FixtureService.updateFixture(id, fixture),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['fixtures'] });
+      queryClient.invalidateQueries({ queryKey: ["fixtures"] });
     },
   });
 }
 
 export function useDeleteFixture() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: FixtureService.deleteFixture,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['fixtures'] });
+      queryClient.invalidateQueries({ queryKey: ["fixtures"] });
     },
   });
 }
