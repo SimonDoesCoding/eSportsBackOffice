@@ -45,8 +45,6 @@ export default function ResultsPage() {
           </div>
         ) : (
           results.map((r) => {
-            const team1Won = r.winnerId === r.fixtureId; // Need team IDs - use score comparison instead
-            const team2Won = !team1Won;
             const t1Won = r.team1Score > r.team2Score;
             const t2Won = r.team2Score > r.team1Score;
             const t1Config = getTeamConfig(r.team1Name);

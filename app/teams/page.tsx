@@ -11,7 +11,6 @@ export default function TeamsPage() {
   const { data: teams, isLoading, error } = useTeams();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTeam, setEditingTeam] = useState<Team | undefined>(undefined);
-  const [isCdlOnly, setIsCdlOnly] = useState(true);
 
   // Type-safe helper
   const teamsData = teams as Team[] | undefined;
