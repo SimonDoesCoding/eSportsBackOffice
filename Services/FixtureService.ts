@@ -1,23 +1,17 @@
-﻿import { Fixture, FixtureType, Result } from "../types";
+import { Fixture, FixtureType, Result } from "../types";
 import { apiRequest } from "./api";
-
-// CDL League ID
 
 export class FixtureService {
   static async getFixtures(): Promise<Fixture[]> {
-    return apiRequest<Fixture[]>("/Fixtures");
+    return apiRequest<Fixture[]>("/fixtures");
   }
 
   static async getUpcomingFixtures(): Promise<Fixture[]> {
-    return apiRequest<Fixture[]>(`/fixtures/upcoming`);
+    return apiRequest<Fixture[]>("/fixtures/upcoming");
   }
 
   static async getFixture(id: string): Promise<Fixture> {
     return apiRequest<Fixture>(`/fixtures/${id}`);
-  }
-
-  static async getFixtureTypes(): Promise<FixtureType[]> {
-    return apiRequest<FixtureType[]>("/FixtureTypes");
   }
 
   static async createFixture(fixture: Omit<Fixture, "id">): Promise<Fixture> {
@@ -48,6 +42,6 @@ export class FixtureService {
     if (from) params.set("from", from);
     if (to) params.set("to", to);
     const query = params.toString() ? `?${params.toString()}` : "";
-    return apiRequest<Result[]>(`/Fixtures/results${query}`);
+    return apiRequest<Result[]>(`/fixtures/results${query}`);
   }
 }

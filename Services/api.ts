@@ -1,5 +1,8 @@
 // Base API configuration and utilities
-export const API_BASE_URL = "https://pricing.sitechesports.com/api";
+export const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api/v1";
+
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "sitech-esports-2026";
 
 export class ApiError extends Error {
   constructor(
@@ -20,6 +23,7 @@ export async function apiRequest<T>(
   const response = await fetch(url, {
     headers: {
       "Content-Type": "application/json",
+      "Sitech-Api-Key": API_KEY,
       ...options.headers,
     },
     ...options,

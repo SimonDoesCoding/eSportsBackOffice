@@ -1,16 +1,24 @@
-import { StatType } from '../types';
-import { apiRequest } from './api';
+import { apiRequest } from "./api";
 
 export class StatService {
-  static async getStats(): Promise<StatType[]> {
-    return apiRequest<StatType[]>('/Stats');
+  /**
+   * Recalculate all team and player stats.
+   * POST /stats/recalculate
+   */
+  static async recalculate(fixtureTypeId?: string): Promise<void> {
+    const query = fixtureTypeId ? `?fixtureTypeId=${fixtureTypeId}` : "";
+    return apiRequest<void>(`/stats/recalculate${query}`, {
+      method: "POST",
+    });
   }
 
-  static async getStat(id: string): Promise<StatType> {
-    return apiRequest<StatType>(`/Stats/${id}`);
-  }
-
-  static async getStatsByGameMode(gameModeId: string): Promise<StatType[]> {
-    return apiRequest<StatType[]>(`/Stats/gamemode/${gameModeId}`);
+  /**
+   * Recalculate online stats only.
+   * POST /stats/recalculate/online
+   */
+  static async recalculateOnline(): Promise<void> {
+    return apiRequest<void>("/stats/recalculate/online", {
+      method: "POST",
+    });
   }
 }
